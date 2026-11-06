@@ -44,7 +44,10 @@ function Group({ group, onNavigate }: { group: NavGroup; onNavigate: () => void 
 function Promo({ promo, onNavigate }: { promo: NavPromo; onNavigate: () => void }) {
   return (
     <div className="mt-8 overflow-hidden rounded-card border border-ink-100 bg-white shadow-card">
-      <div aria-hidden className="h-24 bg-linear-to-br from-brand-600 via-violet-500 to-coral-500" />
+      <div
+        aria-hidden
+        className="h-24 bg-linear-to-br from-brand-600 via-violet-500 to-coral-500"
+      />
       <div className="p-4">
         <p className="text-sm font-semibold text-ink-950">{promo.title}</p>
         <p className="mt-1 text-sm text-ink-500">{promo.text}</p>

@@ -194,7 +194,10 @@ export function Header() {
                     {menu.label}
                     <ChevronDown
                       aria-hidden
-                      className={clsx("size-4 transition-transform duration-150", isOpen && "rotate-180")}
+                      className={clsx(
+                        "size-4 transition-transform duration-150",
+                        isOpen && "rotate-180",
+                      )}
                     />
                   </button>
                   <MegaMenuPanel menu={menu} open={isOpen} onNavigate={closeAll} />
@@ -220,7 +223,11 @@ export function Header() {
             onClick={() => setMobileOpen((open) => !open)}
             className="inline-flex size-10 items-center justify-center rounded-lg text-ink-800 hover:bg-ink-50 lg:hidden"
           >
-            {mobileOpen ? <X aria-hidden className="size-6" /> : <Menu aria-hidden className="size-6" />}
+            {mobileOpen ? (
+              <X aria-hidden className="size-6" />
+            ) : (
+              <Menu aria-hidden className="size-6" />
+            )}
           </button>
         </div>
       </Container>

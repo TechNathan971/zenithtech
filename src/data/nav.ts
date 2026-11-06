@@ -9,8 +9,7 @@ export type NavMenu = {
   footerLink?: NavItem;
 };
 export type NavEntry =
-  | { type: "menu"; menu: NavMenu }
-  | { type: "link"; label: string; href: string };
+  { type: "menu"; menu: NavMenu } | { type: "link"; label: string; href: string };
 
 const link = (label: string, href: string, description?: string): NavItem => ({
   label,

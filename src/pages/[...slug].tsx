@@ -32,7 +32,7 @@ export default function PlaceholderPage({ title, description, href }: Props) {
           <h1 className="mt-4 max-w-3xl text-5xl font-semibold">{title}</h1>
           {description && <p className="mt-4 text-xl text-ink-600">{description}</p>}
           <p className="mt-8 max-w-xl rounded-card bg-ink-50 p-5 text-ink-600">
-            This page is a placeholder generated from the navigation data. We'll replace it with
+            This page is a placeholder generated from the navigation data. We will replace it with
             the real page in a later step.
           </p>
           <div className="mt-8">
