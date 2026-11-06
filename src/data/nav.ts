@@ -225,6 +225,7 @@ export const mainNav: NavEntry[] = [
 const extraRoutes: NavItem[] = [
   link("Sign in", "/sign-in"),
   link("Contact sales", "/contact-sales"),
+  link("Get started", "/get-started"),
 ];
 
 /** Every unique link on the site's navigation, used to generate placeholder pages. */
