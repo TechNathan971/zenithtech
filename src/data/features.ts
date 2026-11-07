@@ -1,107 +1,127 @@
 export type FeatureId =
-  "payments" | "billing" | "platform" | "assistants" | "cards" | "stablecoins";
+  "pipelines" | "containers" | "iac" | "observability" | "security" | "automation";
 
 export type Feature = {
   id: FeatureId;
   title: string;
   href: string;
-  summary: string;
+  short: string; // shown on the tile
+  summary: string; // shown in the pop-up
   bullets: string[];
+  tags: string[];
   cta: string;
   surface: string; // gradient behind the mockup
-  span: string; // how many grid columns the card takes on large screens
+  span: string; // grid columns on large screens
   split?: boolean; // text on the left, mockup on the right
 };
 
 export const features: Feature[] = [
   {
-    id: "payments",
-    title: "Take payments anywhere, online and in person",
-    href: "/products/payments",
+    id: "pipelines",
+    title: "Pipelines that ship code safely and often",
+    href: "/topics/pipelines",
+    short:
+      "Build, test, scan and deploy on every push, so shipping becomes routine instead of an event.",
     summary:
-      "Accept cards, wallets and bank payments in more than 100 countries, with a checkout that adapts to every shopper and a terminal for the shop floor.",
+      "Continuous integration and delivery is where DevOps pays off. I build pipelines that run the tests, check for problems and deploy automatically, with a clear record of what changed, who approved it and where it went.",
     bullets: [
-      "Local payment methods shown automatically for each shopper",
-      "One integration for web, mobile app and in-store",
-      "Smart retries that recover failed payments",
+      "Every push is built, tested and scanned automatically",
+      "Environments promoted step by step, with approvals where they matter",
+      "Failures reported where developers already work",
     ],
-    cta: "Explore Payments",
+    tags: ["GitHub Actions", "Docker", "Git"],
+    cta: "Read about pipelines",
     surface: "bg-linear-to-br from-orange-100 via-coral-400/40 to-pink-300",
     span: "lg:col-span-4",
   },
   {
-    id: "billing",
-    title: "Bill customers exactly how you want",
-    href: "/products/billing",
+    id: "containers",
+    title: "Containers and Kubernetes, from laptop to cluster",
+    href: "/topics/containers",
+    short:
+      "Package an app once, run it anywhere, and let the cluster scale it up and down as demand changes.",
     summary:
-      "Charge flat fees, seats, usage or any mix of them. Plans, trials, invoices and tax all run on one billing engine.",
+      "Containers make software behave the same on every machine, and Kubernetes keeps it running at scale. This is about small reproducible images, safe rollouts, health checks and autoscaling that responds to real load.",
     bullets: [
-      "Usage-based and tiered pricing",
-      "Automatic invoices, retries and reminders",
-      "Revenue reports your finance team can trust",
+      "Small, reproducible images with pinned versions",
+      "Rolling updates, health checks and automatic recovery",
+      "Local clusters for testing before anything goes live",
     ],
-    cta: "Explore Billing",
+    tags: ["Docker", "Kubernetes", "Helm"],
+    cta: "Read about containers",
     surface: "bg-linear-to-br from-brand-100 via-violet-200 to-pink-200",
     span: "lg:col-span-2",
   },
   {
-    id: "platform",
-    title: "Embed payments inside your platform",
-    href: "/products/platform-pay",
+    id: "iac",
+    title: "Infrastructure as code you can review and repeat",
+    href: "/topics/infrastructure-as-code",
+    short:
+      "Describe servers, networks and clusters in files, review the changes like any other code, then apply them the same way every time.",
     summary:
-      "Add payments, payouts and financial accounts to your own software with drop-in components or APIs, while ZenithTech handles onboarding and compliance.",
+      "When infrastructure lives in version control, changes get reviewed, history is kept and environments stop drifting apart. I use plan-before-apply workflows so surprises show up early, with reusable modules for the pieces every project needs.",
     bullets: [
-      "Embedded dashboards for your customers",
-      "Automatic identity checks and risk monitoring",
-      "Earn revenue on every transaction your platform powers",
+      "A plan step that shows exactly what will change",
+      "Reusable modules for networks, clusters and storage",
+      "State and secrets handled safely",
     ],
-    cta: "Explore Platform Pay",
+    tags: ["Terraform", "Ansible", "Git"],
+    cta: "Read about infrastructure as code",
     surface: "bg-linear-to-br from-violet-300 via-brand-300 to-brand-500",
     span: "lg:col-span-6",
     split: true,
   },
   {
-    id: "assistants",
-    title: "Sell through AI assistants",
-    href: "/solutions/ai-companies",
+    id: "observability",
+    title: "Observability: know how your systems are doing",
+    href: "/topics/observability",
+    short:
+      "Metrics, logs and traces turn guessing into knowing, and good alerts tell you before your users do.",
     summary:
-      "Let shoppers discover and buy your products from inside AI chat experiences, with secure checkout and a catalog that stays in sync.",
+      "You cannot fix what you cannot see. This covers dashboards built around what users actually feel, alerts that are worth waking up for, and the habit of writing short post-incident notes so the same problem doesn't return.",
     bullets: [
-      "Product feeds that assistants can read",
-      "Secure, tokenized checkout inside the conversation",
-      "Orders land in the tools you already use",
+      "Dashboards built around user experience",
+      "Alerts that are actionable, not noisy",
+      "Post-incident reviews that improve the system",
     ],
-    cta: "See AI solutions",
+    tags: ["Prometheus", "Grafana", "OpenTelemetry"],
+    cta: "Read about observability",
     surface: "bg-linear-to-br from-pink-100 via-white to-violet-100",
     span: "lg:col-span-2",
   },
   {
-    id: "cards",
-    title: "Launch your own card program",
-    href: "/products/cards",
+    id: "security",
+    title: "Security built into every step",
+    href: "/topics/security",
+    short:
+      "Catch leaked secrets, vulnerable packages and risky settings while the code is still being written.",
     summary:
-      "Issue physical and virtual cards under your own brand, with spending controls you set in code.",
+      "Security works best when it is part of the pipeline, not a review at the end. Automated checks flag problems on every pull request, so fixing them is cheap and nothing risky reaches production unnoticed.",
     bullets: [
-      "Instant virtual cards through the API",
-      "Real-time spending limits and controls",
-      "Share in the revenue from card spending",
+      "Secret and dependency scanning on every pull request",
+      "Container images checked before they ship",
+      "Least-privilege access by default",
     ],
-    cta: "Explore Cards",
+    tags: ["Trivy", "Dependabot", "OPA"],
+    cta: "Read about security",
     surface: "bg-linear-to-br from-pink-200 via-fuchsia-300 to-violet-300",
     span: "lg:col-span-2",
   },
   {
-    id: "stablecoins",
-    title: "Move money across borders with stablecoins",
-    href: "/products/stablecoin-rails",
+    id: "automation",
+    title: "Automate the boring parts",
+    href: "/topics/automation",
+    short:
+      "Scripts and scheduled jobs that handle repetitive work, so time goes to the problems that need a person.",
     summary:
-      "Send and receive stablecoin payments, hold balances in wallets, and settle to local currency in seconds.",
+      "Patching, backups, clean-ups and reports should not depend on someone remembering. Good automation is idempotent, safe to re-run, and tells you when something needs attention.",
     bullets: [
-      "Wallets and payouts in one place",
-      "Settlement into local currency",
-      "Built-in compliance and monitoring",
+      "Patching, backups and clean-ups on a schedule",
+      "Idempotent scripts that are safe to re-run",
+      "Notifications when something needs a human",
     ],
-    cta: "Explore Stablecoin Rails",
+    tags: ["Bash", "Python", "PowerShell"],
+    cta: "Read about automation",
     surface: "bg-linear-to-br from-brand-50 via-brand-100 to-violet-200",
     span: "lg:col-span-2",
   },

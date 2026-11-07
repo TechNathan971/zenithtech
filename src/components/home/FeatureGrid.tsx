@@ -12,7 +12,10 @@ function FeatureDetail({ feature, onClose }: { feature: Feature; onClose: () => 
   return (
     <div className="grid lg:grid-cols-[1.1fr_1fr]">
       <div className={clsx("@container relative min-h-72 lg:min-h-[30rem]", feature.surface)}>
-        <FeatureMock id={feature.id} />
+        <FeatureMock id={feature.id} playing />
+        <span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-ink-600 shadow-card">
+          Live demo · sample data
+        </span>
       </div>
       <div className="flex flex-col p-6 sm:p-8">
         <h3 className="pr-10 text-3xl leading-tight font-semibold text-ink-950 lg:pr-0">
@@ -24,6 +27,16 @@ function FeatureDetail({ feature, onClose }: { feature: Feature; onClose: () => 
             <li key={bullet} className="flex gap-3 text-sm text-ink-700">
               <Check aria-hidden className="mt-0.5 size-5 shrink-0 text-brand-600" />
               {bullet}
+            </li>
+          ))}
+        </ul>
+        <ul className="mt-6 flex flex-wrap gap-1.5">
+          {feature.tags.map((tag) => (
+            <li
+              key={tag}
+              className="rounded-full bg-ink-50 px-2.5 py-1 text-xs font-medium text-ink-600"
+            >
+              {tag}
             </li>
           ))}
         </ul>
@@ -51,9 +64,10 @@ export function FeatureGrid() {
     <section className="py-20 sm:py-28">
       <Container>
         <h2 className="max-w-4xl text-4xl leading-tight font-semibold sm:text-5xl">
-          <span className="text-ink-950">One platform, every business model.</span>{" "}
+          <span className="text-ink-950">Everything between a commit and production.</span>{" "}
           <span className="text-ink-400">
-            Mix and match payments, billing and money tools to fit the way you sell.
+            Pipelines, containers, infrastructure, monitoring and security: the pieces I build,
+            break and write about.
           </span>
         </h2>
         <div className="mt-12 grid gap-5 lg:grid-cols-6">
@@ -66,7 +80,7 @@ export function FeatureGrid() {
       <Modal
         open={active !== null}
         onClose={() => setActive(null)}
-        label={active?.title ?? "Feature details"}
+        label={active?.title ?? "Topic details"}
       >
         {active && <FeatureDetail feature={active} onClose={() => setActive(null)} />}
       </Modal>

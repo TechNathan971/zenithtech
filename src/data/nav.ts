@@ -1,4 +1,5 @@
 import { customerHref, heroLogos } from "./customers";
+import { features } from "./features";
 export type NavItem = { label: string; href: string; description?: string };
 export type NavGroup = { title: string; items: NavItem[] };
 export type NavPromo = { title: string; text: string; cta: NavItem };
@@ -228,6 +229,7 @@ const extraRoutes: NavItem[] = [
   link("Contact sales", "/contact-sales"),
   link("Get started", "/get-started"),
   ...heroLogos.map((logo) => link(`${logo.title} customer story`, customerHref(logo.slug))),
+  ...features.map((feature) => link(feature.title, feature.href, feature.short)),
 ];
 
 /** Every unique link on the site's navigation, used to generate placeholder pages. */
