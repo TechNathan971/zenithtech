@@ -141,7 +141,7 @@ export function Header() {
       onPointerEnter={handleHeaderEnter}
       onPointerLeave={handleHeaderLeave}
       onBlur={handleBlur}
-      className="sticky top-0 z-50 border-b border-ink-100 bg-white/90 backdrop-blur"
+      className="sticky top-0 z-50 border-b border-ink-100 bg-white"
     >
       <Container className="flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">

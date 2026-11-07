@@ -10,7 +10,11 @@ export function Hero() {
         aria-hidden
         className="absolute inset-0 bg-[radial-gradient(60%_55%_at_78%_35%,var(--color-brand-100),transparent)]"
       />
-      <HeroWave className="pointer-events-none absolute inset-0 size-full [mask-image:linear-gradient(to_bottom,black_60%,transparent)] opacity-70 sm:opacity-100" />
+      <HeroWave className="pointer-events-none absolute inset-0 size-full opacity-70 sm:opacity-100" />
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-b from-transparent to-white"
+      />
 
       <Container className="relative pt-14 pb-20 sm:pt-20 sm:pb-28 lg:pt-28 lg:pb-36">
         <div className="animate-fade-up">

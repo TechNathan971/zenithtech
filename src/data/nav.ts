@@ -1,3 +1,4 @@
+import { customerHref, heroLogos } from "./customers";
 export type NavItem = { label: string; href: string; description?: string };
 export type NavGroup = { title: string; items: NavItem[] };
 export type NavPromo = { title: string; text: string; cta: NavItem };
@@ -226,6 +227,7 @@ const extraRoutes: NavItem[] = [
   link("Sign in", "/sign-in"),
   link("Contact sales", "/contact-sales"),
   link("Get started", "/get-started"),
+  ...heroLogos.map((logo) => link(`${logo.title} customer story`, customerHref(logo.slug))),
 ];
 
 /** Every unique link on the site's navigation, used to generate placeholder pages. */
