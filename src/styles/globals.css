@@ -91,3 +91,13 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Customer ticker: moves left one list-width per cycle. Lower the seconds to speed it up. */
+@theme {
+  --animate-marquee: marquee 32s linear infinite;
+  @keyframes marquee {
+    to {
+      transform: translateX(-25%);
+    }
+  }
+}
