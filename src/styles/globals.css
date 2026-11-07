@@ -101,3 +101,51 @@
     }
   }
 }
+
+/* Feature grid mockup animations */
+@theme {
+  --animate-meter: meter 5s ease-in-out infinite alternate;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-shimmer: shimmer 4s ease-in-out infinite;
+  --animate-loop-in: loop-in 10s ease-out infinite both;
+
+  @keyframes meter {
+    from {
+      transform: scaleX(0.18);
+    }
+    to {
+      transform: scaleX(0.74);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+  @keyframes shimmer {
+    from {
+      transform: translateX(-130%) skewX(-18deg);
+    }
+    to {
+      transform: translateX(260%) skewX(-18deg);
+    }
+  }
+  @keyframes loop-in {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    8%,
+    88% {
+      opacity: 1;
+      transform: none;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}
