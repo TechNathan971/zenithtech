@@ -1,7 +1,7 @@
 export const site = {
   name: "ZenithTech",
-  tagline: "Money tools for ambitious businesses",
+  tagline: "Engineering that ships, scales and stays up",
   description:
-    "ZenithTech helps businesses take payments, manage billing and move money around the world.",
+    "ZenithTech is the personal tech site of a DevOps engineer: pipelines, cloud infrastructure, reliability and automation, with projects, guides and notes from the field.",
   url: "http://localhost:3000",
 };

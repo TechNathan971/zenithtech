@@ -33,7 +33,7 @@ function LogoRow({ hidden = false }: { hidden?: boolean }) {
 export function LogoStrip() {
   return (
     <section
-      aria-label="Customers"
+      aria-label="Tools and technologies"
       className="group/marquee relative overflow-hidden border-y border-ink-100 bg-white py-6 motion-reduce:overflow-x-auto"
     >
       <div className="flex w-max animate-marquee will-change-transform group-focus-within/marquee:[animation-play-state:paused] group-hover/marquee:[animation-play-state:paused] motion-reduce:animate-none">
