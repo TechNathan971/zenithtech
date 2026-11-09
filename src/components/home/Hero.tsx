@@ -1,10 +1,13 @@
 import { GitBranch } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { useI18n } from "@/hooks/useI18n";
 import { HeroWave } from "./HeroWave";
 import { LiveStatus } from "./LiveStatus";
 
 export function Hero() {
+  const { t } = useI18n();
+
   return (
     <section className="relative overflow-hidden">
       <div
@@ -25,25 +28,30 @@ export function Hero() {
           className="mt-6 max-w-2xl animate-fade-up text-5xl font-semibold sm:text-6xl lg:text-7xl"
           style={{ animationDelay: "80ms" }}
         >
-          Engineering that ships, scales and stays up.
+          {t([
+            "Engineering that ships, scales and stays up.",
+            "Une ingénierie qui livre, évolue et tient bon.",
+          ])}
         </h1>
         <p
           className="mt-6 max-w-xl animate-fade-up text-lg text-ink-600 sm:text-xl"
           style={{ animationDelay: "160ms" }}
         >
-          I’m a DevOps engineer. I design the pipelines, cloud platforms and automation that carry
-          software from a commit to production, and keep it reliable once it gets there.
+          {t([
+            "I’m a DevOps engineer. I design the pipelines, cloud platforms and automation that carry software from a commit to production, and keep it reliable once it gets there.",
+            "Je suis ingénieur DevOps. Je conçois les pipelines, les plateformes cloud et l’automatisation qui portent un logiciel du premier commit jusqu’à la production, et le gardent fiable une fois là-bas.",
+          ])}
         </p>
         <div
           className="mt-10 flex animate-fade-up flex-wrap gap-3"
           style={{ animationDelay: "240ms" }}
         >
           <Button href="/get-started" size="lg" arrow>
-            Get started
+            {t(["Get started", "Commencer"])}
           </Button>
           <Button href="/sign-in" size="lg" variant="secondary">
             <GitBranch aria-hidden className="size-4" />
-            Continue with GitHub
+            {t(["Continue with GitHub", "Continuer avec GitHub"])}
           </Button>
         </div>
       </Container>

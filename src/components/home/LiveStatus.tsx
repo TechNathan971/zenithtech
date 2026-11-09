@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
+import { useI18n } from "@/hooks/useI18n";
 
 function subscribe(onTick: () => void) {
   const id = setInterval(onTick, 1000);
@@ -14,6 +15,7 @@ const getServerSnapshot = (): number | null => null;
 const pad = (n: number) => String(n).padStart(2, "0");
 
 export function LiveStatus() {
+  const { t } = useI18n();
   const seconds = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   let clock = "--:--:--";
@@ -29,13 +31,13 @@ export function LiveStatus() {
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:hidden" />
           <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
         </span>
-        All systems operational
+        {t(["All systems operational", "Tous les systèmes sont opérationnels"])}
       </Link>
       <span aria-hidden className="text-ink-300">
         ·
       </span>
       <span className="text-ink-600">
-        Server time{" "}
+        {t(["Server time", "Heure du serveur"])}{" "}
         <span aria-hidden className="font-medium text-brand-600 tabular-nums">
           {clock}
         </span>{" "}

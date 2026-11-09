@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { ChevronDown, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   FocusEvent as ReactFocusEvent,
   MouseEvent as ReactMouseEvent,
@@ -11,7 +11,8 @@ import type {
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { mainNav } from "@/data/nav";
+import { getMainNav } from "@/data/nav";
+import { useI18n } from "@/hooks/useI18n";
 import { MegaMenuPanel } from "./MegaMenuPanel";
 import { MobileMenu } from "./MobileMenu";
 
@@ -22,6 +23,9 @@ const isMouse = (e: { pointerType: string }) => e.pointerType === "mouse";
 
 export function Header() {
   const router = useRouter();
+  const { locale, t } = useI18n();
+  const mainNav = useMemo(() => getMainNav(locale), [locale]);
+
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
@@ -114,7 +118,7 @@ export function Header() {
     else openTimer.current = setTimeout(() => setOpenId(id), OPEN_DELAY);
   };
 
-  // Hovering the logo, Pricing or the buttons closes any open panel
+  // Hovering the logo, plain links or the buttons closes any open panel
   const handleOtherEnter = (e: ReactPointerEvent<HTMLElement>) => {
     if (!isMouse(e)) return;
     clearTimeout(openTimer.current);
@@ -147,7 +151,7 @@ export function Header() {
         <div className="flex items-center gap-8">
           <Link
             href="/"
-            aria-label="ZenithTech home"
+            aria-label={t(["ZenithTech home", "Accueil ZenithTech"])}
             className="text-ink-950"
             onPointerEnter={handleOtherEnter}
             onFocus={() => setOpenId(null)}
@@ -155,7 +159,10 @@ export function Header() {
             <Logo />
           </Link>
 
-          <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
+          <nav
+            aria-label={t(["Primary", "Principale"])}
+            className="hidden items-center gap-1 lg:flex"
+          >
             {mainNav.map((entry) => {
               if (entry.type === "link") {
                 return (
@@ -209,15 +216,17 @@ export function Header() {
 
         <div className="flex items-center gap-2" onPointerEnter={handleOtherEnter}>
           <Button href="/sign-in" variant="secondary" className="hidden sm:inline-flex">
-            Sign in
+            {t(["Sign in", "Se connecter"])}
           </Button>
           <Button href="/contact" arrow className="hidden sm:inline-flex">
-            Contact me
+            {t(["Contact me", "Me contacter"])}
           </Button>
           <button
             ref={menuButtonRef}
             type="button"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-label={
+              mobileOpen ? t(["Close menu", "Fermer le menu"]) : t(["Open menu", "Ouvrir le menu"])
+            }
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
             onClick={() => setMobileOpen((open) => !open)}
