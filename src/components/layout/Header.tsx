@@ -211,8 +211,8 @@ export function Header() {
           <Button href="/sign-in" variant="secondary" className="hidden sm:inline-flex">
             Sign in
           </Button>
-          <Button href="/contact-sales" arrow className="hidden sm:inline-flex">
-            Contact sales
+          <Button href="/contact" arrow className="hidden sm:inline-flex">
+            Contact me
           </Button>
           <button
             ref={menuButtonRef}

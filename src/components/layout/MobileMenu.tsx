@@ -82,8 +82,8 @@ export function MobileMenu({ id, open, onNavigate }: MobileMenuProps) {
           <Button href="/sign-in" variant="secondary" size="lg" onClick={onNavigate}>
             Sign in
           </Button>
-          <Button href="/contact-sales" size="lg" arrow onClick={onNavigate}>
-            Contact sales
+          <Button href="/contact" size="lg" arrow onClick={onNavigate}>
+            Contact me
           </Button>
         </div>
       </Container>

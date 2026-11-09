@@ -1,4 +1,6 @@
 import { customerHref, heroLogos } from "./customers";
+import { features } from "./features";
+
 export type NavItem = { label: string; href: string; description?: string };
 export type NavGroup = { title: string; items: NavItem[] };
 export type NavPromo = { title: string; text: string; cta: NavItem };
@@ -17,157 +19,161 @@ const link = (label: string, href: string, description?: string): NavItem => ({
   href,
   description,
 });
-const product = (label: string, slug: string, description: string) =>
-  link(label, `/products/${slug}`, description);
-const solution = (label: string, slug: string) => link(label, `/solutions/${slug}`);
+const work = (label: string, slug: string, description: string) =>
+  link(label, `/work/${slug}`, description);
+const service = (label: string, slug: string) => link(label, `/services/${slug}`);
+const guide = (label: string, slug: string) => link(label, `/learn/guides/${slug}`);
 
-const productsMenu: NavMenu = {
-  id: "products",
-  label: "Products",
+const workMenu: NavMenu = {
+  id: "work",
+  label: "Work",
   columns: [
     {
-      title: "Payments",
+      title: "Delivery",
       items: [
-        product("Payments", "payments", "Online payments"),
-        product("Pay Links", "pay-links", "No-code payments"),
-        product("Checkout", "checkout", "Prebuilt payment pages"),
-        product("Components", "components", "Flexible UI building blocks"),
-        product("Payment methods", "payment-methods", "Access to 100+ methods"),
-        product("Counter", "counter", "In-person payments"),
-        product("Smart Routing", "smart-routing", "Higher acceptance rates"),
-        product("OneTap", "onetap", "Faster checkout"),
-        product("Bank Connect", "bank-connect", "Linked bank account data"),
+        work("CI/CD Pipelines", "ci-cd-pipelines", "Build, test and release"),
+        work("Release Automation", "release-automation", "Hands-off deployments"),
+        work("GitOps Workflows", "gitops", "Git as the source of truth"),
+        work("Preview Environments", "preview-environments", "A staging copy for every branch"),
+        work("Feature Flags", "feature-flags", "Ship dark, release gradually"),
+        work("Rollback Toolkit", "rollback-toolkit", "Undo a release safely"),
+        work("Artifact Registry", "artifact-registry", "Versioned build outputs"),
       ],
     },
     {
-      title: "Revenue",
+      title: "Cloud and infrastructure",
       items: [
-        product("Billing", "billing", "Recurring revenue"),
-        product("Metered", "metered", "Usage-based billing"),
-        product("Plans", "plans", "Subscription management"),
-        product("Invoices", "invoices", "One-time or recurring"),
-        product("Taxes", "taxes", "Sales tax and VAT automation"),
-        product("Ledger", "ledger", "Revenue accounting"),
-        product("Insights", "insights", "Custom reports"),
-        product("Data Sync", "data-sync", "Warehouse exports"),
+        work("Terraform Modules", "terraform-modules", "Reusable infrastructure"),
+        work("Kubernetes Clusters", "kubernetes-clusters", "Container orchestration"),
+        work("Landing Zones", "landing-zones", "Cloud account foundations"),
+        work("Network Patterns", "network-patterns", "VPCs, DNS and load balancing"),
+        work("Serverless Recipes", "serverless-recipes", "Functions and events"),
+        work("Cost Dashboards", "cost-dashboards", "Cloud spend, made visible"),
+        work("Backup and Recovery", "backup-recovery", "Restore with confidence"),
       ],
     },
     {
-      title: "Money management",
+      title: "Reliability",
       items: [
-        product("Vault", "vault", "Business accounts and cash"),
-        product("Global Transfers", "global-transfers", "Payouts to anyone"),
-        product("Growth Funding", "growth-funding", "Business financing"),
-        product("Stablecoin Rails", "stablecoin-rails", "Wallets and stablecoin payments"),
-        product("Crypto Checkout", "crypto-checkout", "Embeddable crypto purchases"),
+        work("Observability Stack", "observability-stack", "Metrics, logs and traces"),
+        work("SLO Tracker", "slo-tracker", "Reliability targets"),
+        work("Incident Playbooks", "incident-playbooks", "Calm, practiced response"),
+        work("Chaos Experiments", "chaos-experiments", "Break things on purpose"),
+        work("Load Testing Lab", "load-testing-lab", "Know your limits"),
+        work("Status Page", "status-page", "Honest uptime reporting"),
       ],
     },
     {
-      title: "Embedded finance",
+      title: "Platform and security",
       items: [
-        product("Platform Pay", "platform-pay", "Payments for platforms"),
-        product("Platform Funding", "platform-funding", "Customer financing"),
-        product("Platform Vault", "platform-vault", "Embedded financial accounts"),
-        product("Cards", "cards", "Physical and virtual cards"),
+        work("Developer Platform", "developer-platform", "Self-service for teams"),
+        work("DevSecOps Pipeline", "devsecops-pipeline", "Security in every build"),
+        work("Secrets Management", "secrets-management", "Keys kept out of code"),
+        work("Policy as Code", "policy-as-code", "Rules that enforce themselves"),
+        work("Supply-Chain Checks", "supply-chain-checks", "Trust what you ship"),
       ],
     },
   ],
   aside: {
     title: "More",
     items: [
-      link("Roadmap", "/roadmap", "See what's ahead"),
-      product("Shield", "shield", "Fraud prevention"),
-      product("Launch", "launch", "Company incorporation"),
-      product("Offsets", "offsets", "Carbon removal"),
-      product("Identity Check", "identity-check", "Online identity verification"),
+      work("Open Source", "open-source", "Repos and contributions"),
+      work("The Lab", "lab", "Experiments and prototypes"),
+      work("CLI Tools", "cli-tools", "Small tools that save time"),
+      link("Case Studies", "/case-studies", "Real problems, real fixes"),
+      link("Roadmap", "/roadmap", "What I’m learning next"),
     ],
     promo: {
-      title: "ZenithTech Summit 2026",
-      text: "See how we're building the next generation of money tools.",
-      cta: link("Watch now", "/summit"),
+      title: "ZenithTech Talks 2026",
+      text: "Recorded sessions on building and running reliable systems.",
+      cta: link("Watch now", "/talks"),
     },
   },
-  footerLink: link("See all products", "/products"),
+  footerLink: link("See all work", "/work"),
 };
 
-const solutionsMenu: NavMenu = {
-  id: "solutions",
-  label: "Solutions",
+const servicesMenu: NavMenu = {
+  id: "services",
+  label: "Services",
   columns: [
     {
       title: "By stage",
-      items: [solution("Enterprises", "enterprises"), solution("Startups", "startups")],
+      items: [
+        service("Startups", "startups"),
+        service("Growing teams", "growing-teams"),
+        service("Enterprises", "enterprises"),
+      ],
     },
     {
-      title: "By use case",
+      title: "By need",
       items: [
-        solution("Ecommerce", "ecommerce"),
-        solution("Marketplaces", "marketplaces"),
-        solution("SaaS", "saas"),
-        solution("Platforms", "platforms"),
-        solution("Global businesses", "global-businesses"),
-        solution("In-app payments", "in-app-payments"),
-        solution("Embedded finance", "embedded-finance"),
-        solution("Finance automation", "finance-automation"),
-        solution("Money management", "money-management"),
-        solution("Digital assets", "digital-assets"),
+        service("CI/CD setup", "ci-cd-setup"),
+        service("Kubernetes adoption", "kubernetes-adoption"),
+        service("Cloud migration", "cloud-migration"),
+        service("Cost optimization", "cost-optimization"),
+        service("Observability setup", "observability-setup"),
+        service("Security hardening", "security-hardening"),
+        service("Disaster recovery", "disaster-recovery"),
+        service("Automation", "automation"),
+        service("Platform engineering", "platform-engineering"),
+        service("Team training", "team-training"),
       ],
     },
     {
       title: "By industry",
       items: [
-        solution("AI companies", "ai-companies"),
-        solution("Creator economy", "creator-economy"),
-        solution("Fintech", "fintech"),
-        solution("Gaming", "gaming"),
-        solution("Travel and hospitality", "travel-hospitality"),
-        solution("Insurance", "insurance"),
-        solution("Media and entertainment", "media-entertainment"),
-        solution("Nonprofits", "nonprofits"),
-        solution("Professional services", "professional-services"),
-        solution("Public sector", "public-sector"),
-        solution("Retail", "retail"),
+        service("AI and ML", "ai-ml"),
+        service("Fintech", "fintech"),
+        service("Healthcare", "healthcare"),
+        service("E-commerce", "e-commerce"),
+        service("SaaS", "saas"),
+        service("Gaming", "gaming"),
+        service("Education", "education"),
+        service("Logistics", "logistics"),
+        service("Media", "media"),
+        service("Nonprofits", "nonprofits"),
+        service("Public sector", "public-sector"),
       ],
     },
   ],
   aside: {
     title: "Ecosystem",
-    items: [link("Partners", "/partners"), link("App Marketplace", "/marketplace")],
+    items: [link("Partners", "/partners"), link("Template library", "/templates")],
   },
 };
 
-const developersMenu: NavMenu = {
-  id: "developers",
-  label: "Developers",
+const learnMenu: NavMenu = {
+  id: "learn",
+  label: "Learn",
   columns: [
     {
       title: "Documentation",
       items: [
-        link("Docs", "/developers/docs"),
-        link("API reference", "/developers/api-reference"),
-        link("Libraries and SDKs", "/developers/sdks"),
-        link("Apps", "/developers/apps"),
+        link("Handbook", "/learn/handbook"),
+        link("Cheat sheets", "/learn/cheat-sheets"),
+        link("CLI reference", "/learn/cli-reference"),
+        link("Snippets", "/learn/snippets"),
       ],
     },
     {
       title: "Guides",
       items: [
-        link("Accept online payments", "/developers/guides/accept-payments"),
-        link("Build a prebuilt checkout", "/developers/guides/checkout"),
-        link("Build a platform or marketplace", "/developers/guides/platforms"),
-        link("Manage subscriptions", "/developers/guides/subscriptions"),
-        link("Offer usage-based billing", "/developers/guides/metered-billing"),
-        link("Issue virtual cards", "/developers/guides/cards"),
-        link("Connect AI agents", "/developers/guides/ai-agents"),
+        guide("Set up a CI pipeline", "ci-pipeline"),
+        guide("Containerize an app", "containerize-an-app"),
+        guide("Deploy to Kubernetes", "deploy-to-kubernetes"),
+        guide("Write Terraform modules", "terraform-modules"),
+        guide("Monitor with Prometheus", "monitor-with-prometheus"),
+        guide("Secure the supply chain", "secure-the-supply-chain"),
+        guide("Automate with scripts", "automate-with-scripts"),
       ],
     },
     {
       title: "Resources",
       items: [
-        link("App integrations", "/developers/integrations"),
-        link("Code samples", "/developers/samples"),
-        link("Developer blog", "/developers/blog"),
-        link("API status", "/developers/status"),
+        link("Templates", "/learn/templates"),
+        link("Code samples", "/learn/code-samples"),
+        link("Dev blog", "/blog"),
+        link("System status", "/status"),
       ],
     },
   ],
@@ -178,56 +184,55 @@ const resourcesMenu: NavMenu = {
   label: "Resources",
   columns: [
     {
-      title: "Learn",
+      title: "Read",
       items: [
         link("Blog", "/blog"),
-        link("Customer stories", "/customers"),
+        link("Case studies", "/case-studies"),
         link("Guides", "/guides"),
       ],
     },
     {
       title: "Support",
       items: [
-        link("Get support", "/support"),
-        link("Support plans", "/support/plans"),
-        link("Professional services", "/professional-services"),
+        link("Get in touch", "/support"),
+        link("Office hours", "/support/office-hours"),
+        link("Mentoring", "/support/mentoring"),
       ],
     },
     {
-      title: "Company",
+      title: "About",
       items: [
         link("Roadmap", "/roadmap"),
-        link("Annual summit", "/summit"),
-        link("Careers", "/careers"),
-        link("Newsroom", "/newsroom"),
-        link("Press", "/press"),
+        link("Talks", "/talks"),
+        link("Work with me", "/work-with-me"),
+        link("Updates", "/updates"),
+        link("Press kit", "/press-kit"),
         link("About", "/about"),
       ],
     },
   ],
   aside: {
     title: "Contact",
-    items: [
-      link("Contact sales", "/contact-sales"),
-      link("Become a partner", "/partners/become-a-partner"),
-    ],
+    items: [link("Contact me", "/contact"), link("Collaborate", "/collaborate")],
   },
 };
 
 export const mainNav: NavEntry[] = [
-  { type: "menu", menu: productsMenu },
-  { type: "menu", menu: solutionsMenu },
-  { type: "menu", menu: developersMenu },
+  { type: "menu", menu: workMenu },
+  { type: "menu", menu: servicesMenu },
+  { type: "menu", menu: learnMenu },
   { type: "menu", menu: resourcesMenu },
   { type: "link", label: "Pricing", href: "/pricing" },
+  { type: "link", label: "Guide me", href: "/guide-me" },
 ];
 
-/** Links used outside the menus (header buttons). */
+/** Links used outside the menus (buttons, ticker, topic tiles). */
 const extraRoutes: NavItem[] = [
   link("Sign in", "/sign-in"),
-  link("Contact sales", "/contact-sales"),
+  link("Contact me", "/contact"),
   link("Get started", "/get-started"),
-  ...heroLogos.map((logo) => link(`${logo.title} customer story`, customerHref(logo.slug))),
+  ...heroLogos.map((logo) => link(`${logo.title} in my stack`, customerHref(logo.slug))),
+  ...features.map((feature) => link(feature.title, feature.href, feature.short)),
 ];
 
 /** Every unique link on the site's navigation, used to generate placeholder pages. */

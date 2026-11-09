@@ -94,7 +94,7 @@
 
 /* Customer ticker: moves left one list-width per cycle. Lower the seconds to speed it up. */
 @theme {
-  --animate-marquee: marquee 32s linear infinite;
+  --animate-marquee: marquee 45s linear infinite;
   @keyframes marquee {
     to {
       transform: translateX(-25%);

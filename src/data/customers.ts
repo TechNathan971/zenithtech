@@ -5,44 +5,50 @@ export type CustomerLogo = {
   className: string;
 };
 
-// Fictional companies, styled as plain text wordmarks.
+// The tools shown in the ticker. Edit this list to match your real stack.
 export const heroLogos: CustomerLogo[] = [
+  { name: "Docker", title: "Docker", slug: "docker", className: "font-semibold tracking-tight" },
   {
-    name: "HALCYON",
-    title: "Halcyon",
-    slug: "halcyon",
-    className: "font-light tracking-[0.25em]",
+    name: "Kubernetes",
+    title: "Kubernetes",
+    slug: "kubernetes",
+    className: "font-medium tracking-wide",
   },
   {
-    name: "quillbase",
-    title: "Quillbase",
-    slug: "quillbase",
+    name: "TERRAFORM",
+    title: "Terraform",
+    slug: "terraform",
+    className: "font-bold tracking-[0.18em]",
+  },
+  {
+    name: "GitHub Actions",
+    title: "GitHub Actions",
+    slug: "github-actions",
     className: "font-semibold tracking-tight",
   },
   {
-    name: "Northloop",
-    title: "Northloop",
-    slug: "northloop",
+    name: "Prometheus",
+    title: "Prometheus",
+    slug: "prometheus",
+    className: "font-light tracking-wider",
+  },
+  {
+    name: "Grafana",
+    title: "Grafana",
+    slug: "grafana",
     className: "font-bold italic tracking-tight",
   },
   {
-    name: "MARLOWE",
-    title: "Marlowe",
-    slug: "marlowe",
+    name: "ANSIBLE",
+    title: "Ansible",
+    slug: "ansible",
     className: "font-extrabold tracking-widest",
   },
-  {
-    name: "tidewave",
-    title: "Tidewave",
-    slug: "tidewave",
-    className: "font-medium tracking-tighter",
-  },
-  {
-    name: "Gridline",
-    title: "Gridline",
-    slug: "gridline",
-    className: "font-semibold tracking-wide",
-  },
+  { name: "Linux", title: "Linux", slug: "linux", className: "font-medium tracking-tighter" },
+  { name: "AWS", title: "AWS", slug: "aws", className: "font-extrabold tracking-wide" },
+  { name: "Python", title: "Python", slug: "python", className: "font-semibold tracking-tight" },
+  { name: "Helm", title: "Helm", slug: "helm", className: "font-light tracking-[0.2em]" },
+  { name: "Git", title: "Git", slug: "git", className: "font-bold tracking-tight" },
 ];
 
-export const customerHref = (slug: string) => `/customers/${slug}`;
+export const customerHref = (slug: string) => `/stack/${slug}`;
