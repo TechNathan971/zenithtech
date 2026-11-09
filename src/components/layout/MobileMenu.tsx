@@ -1,13 +1,18 @@
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { mainNav } from "@/data/nav";
+import { getMainNav } from "@/data/nav";
+import { useI18n } from "@/hooks/useI18n";
 
 type MobileMenuProps = { id: string; open: boolean; onNavigate: () => void };
 
 export function MobileMenu({ id, open, onNavigate }: MobileMenuProps) {
+  const { locale, t } = useI18n();
+  const mainNav = useMemo(() => getMainNav(locale), [locale]);
+
   return (
     <div
       id={id}
@@ -80,10 +85,10 @@ export function MobileMenu({ id, open, onNavigate }: MobileMenuProps) {
         </ul>
         <div className="mt-6 grid gap-3 pb-10">
           <Button href="/sign-in" variant="secondary" size="lg" onClick={onNavigate}>
-            Sign in
+            {t(["Sign in", "Se connecter"])}
           </Button>
           <Button href="/contact" size="lg" arrow onClick={onNavigate}>
-            Contact me
+            {t(["Contact me", "Me contacter"])}
           </Button>
         </div>
       </Container>

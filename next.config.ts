@@ -1,16 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
+  i18n: {
+    locales: ["en", "fr"],
+    defaultLocale: "en",
+    localeDetection: false,
   },
-  reactStrictMode: true,
 };
 
 export default nextConfig;
