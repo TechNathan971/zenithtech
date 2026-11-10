@@ -1,7 +1,15 @@
 import clsx from "clsx";
-import { Gauge, ShoppingBag, Wifi } from "lucide-react";
+import { Check, ShieldAlert, ShieldCheck } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 import type { FeatureId } from "@/data/features";
+import { useCycle } from "@/hooks/useCycle";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+
+const STEPS = 5; // every mockup tells its story in 5 steps (0 to 4)
+const INTERVAL = 1400; // ms per step
+const REST = STEPS - 1; // the finished state shown when nothing is hovered
+
+type MockProps = { step: number };
 
 function Window({
   url,
@@ -27,42 +35,76 @@ function Window({
   );
 }
 
-function Field({ label, value }: { label: string; value: string }) {
+function Spinner() {
   return (
-    <div>
-      <p className="mb-1 text-[11px] font-medium text-ink-500">{label}</p>
-      <div className="rounded-md border border-ink-200 bg-white px-3 py-2 text-xs text-ink-900">
-        {value}
-      </div>
-    </div>
+    <span
+      aria-hidden
+      className="size-3.5 animate-spin rounded-full border-2 border-brand-200 border-t-brand-600"
+    />
   );
 }
 
-function PaymentsMock() {
+/* 1. Pipelines: stages complete one after another */
+const STAGES = ["Build", "Test", "Scan", "Deploy"];
+const PIPE_LOG = [
+  "$ docker build -t demo-app .",
+  "$ run tests  ·  42 passed",
+  "$ sonar-scanner  ·  quality gate passed",
+  "$ deploy --env staging",
+  "✓ Live on staging",
+];
+
+function PipelineMock({ step }: MockProps) {
+  const passed = step >= 4;
   return (
-    <div className="flex size-full items-end justify-center gap-5 px-5 pt-8 @lg:px-10">
-      <div className="hidden w-44 shrink-0 rounded-t-[1.75rem] bg-ink-950 p-2 pb-0 shadow-float @lg:block">
-        <div className="rounded-t-[1.35rem] bg-white px-4 pt-6 pb-10 text-center">
-          <div className="relative mx-auto grid size-10 place-items-center">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-200 opacity-60" />
-            <Wifi aria-hidden className="relative size-5 rotate-90 text-brand-600" />
+    <div className="flex size-full items-end justify-center px-5 pt-8 @lg:px-10">
+      <Window url="ci.demo-app.dev/runs/128" className="w-full max-w-lg">
+        <div className="space-y-4 p-5">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold text-ink-950">Run #128 · main</p>
+            <span
+              className={clsx(
+                "rounded-full px-2.5 py-0.5 text-[11px] font-medium transition-colors",
+                passed ? "bg-emerald-100 text-emerald-700" : "bg-brand-50 text-brand-700",
+              )}
+            >
+              {passed ? "Passed" : "Running"}
+            </span>
           </div>
-          <p className="mt-3 text-xs text-ink-500">Pay Brightloom</p>
-          <p className="text-2xl font-semibold text-ink-950">$26.89</p>
-          <p className="mt-2 text-[11px] text-ink-500">Tap, insert or swipe card</p>
-        </div>
-      </div>
-      <Window url="brightloom.shop/checkout" className="w-full max-w-md">
-        <div className="space-y-3 p-5">
-          <p className="text-sm font-bold tracking-wide text-coral-500">BRIGHTLOOM</p>
-          <Field label="Email" value="alex@example.com" />
-          <Field label="Card number" value="•••• •••• •••• 4242" />
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Expiry" value="08 / 29" />
-            <Field label="Security code" value="•••" />
-          </div>
-          <div className="grid h-10 place-items-center rounded-lg bg-brand-600 text-sm font-semibold text-white">
-            Pay $26.89
+          <ol className="flex items-center gap-1.5">
+            {STAGES.map((stage, i) => {
+              const done = step > i;
+              const running = step === i;
+              return (
+                <li
+                  key={stage}
+                  className={clsx(
+                    "flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-2 py-2 text-xs font-medium transition-colors duration-300",
+                    done && "border-emerald-200 bg-emerald-50 text-emerald-700",
+                    running && "border-brand-300 bg-brand-50 text-brand-700",
+                    !done && !running && "border-ink-100 text-ink-400",
+                  )}
+                >
+                  {done && <Check aria-hidden className="size-3.5" />}
+                  {running && <Spinner />}
+                  {stage}
+                </li>
+              );
+            })}
+          </ol>
+          <div className="rounded-lg bg-ink-950 p-3 font-mono text-[11px] leading-5 text-ink-200">
+            {PIPE_LOG.map((line, i) => (
+              <p
+                key={line}
+                className={clsx(
+                  "whitespace-pre transition-opacity duration-300",
+                  i <= step ? "opacity-100" : "opacity-0",
+                  i === PIPE_LOG.length - 1 && "text-emerald-300",
+                )}
+              >
+                {line}
+              </p>
+            ))}
           </div>
         </div>
       </Window>
@@ -70,291 +112,284 @@ function PaymentsMock() {
   );
 }
 
-function BillingMock() {
+/* 2. Containers: replicas scale up as load drops */
+const PODS = 10;
+const REPLICAS = [2, 4, 6, 8, 10];
+const CPU = [86, 68, 54, 44, 36];
+
+function KubeMock({ step }: MockProps) {
+  const replicas = REPLICAS[step];
   return (
-    <div className="flex size-full flex-col items-center justify-end gap-3 px-6 pt-8">
-      <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-float">
+    <div className="flex size-full items-end justify-center px-5 pt-8">
+      <div className="w-full max-w-sm rounded-t-xl bg-white p-5 shadow-float">
+        <div className="flex items-center justify-between">
+          <p className="font-mono text-xs text-ink-700">deployment/web</p>
+          <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-[11px] font-medium text-brand-700 tabular-nums">
+            {replicas}/{PODS} replicas
+          </span>
+        </div>
+        <div className="mt-4 grid grid-cols-5 gap-2">
+          {Array.from({ length: PODS }, (_, i) => (
+            <div
+              key={i}
+              className={clsx(
+                "grid aspect-square place-items-center rounded-lg transition-all duration-500",
+                i < replicas
+                  ? "scale-100 bg-brand-600 text-white"
+                  : "scale-90 bg-ink-100 text-transparent",
+              )}
+            >
+              <Check aria-hidden className="size-4" />
+            </div>
+          ))}
+        </div>
+        <div className="mt-5">
+          <div className="flex justify-between text-[11px] text-ink-500">
+            <span>Average CPU</span>
+            <span className="tabular-nums">{CPU[step]}%</span>
+          </div>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-ink-100">
+            <div
+              className="h-full origin-left rounded-full bg-linear-to-r from-brand-500 to-pink-400 transition-transform duration-700"
+              style={{ transform: `scaleX(${CPU[step] / 100})` }}
+            />
+          </div>
+          <p className="mt-3 font-mono text-[11px] text-ink-500">autoscaler target: 60%</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* 3. Hosting: a server change goes live */
+const HOST_LOG = [
+  "$ sudo nginx -t",
+  "nginx: configuration file test is successful",
+  "$ sudo systemctl reload nginx",
+  "$ curl -I https://app.example.com",
+  "HTTP/2 200 · live",
+];
+const HOST_SERVICES = ["NGINX", "App container", "MySQL database", "Health check"];
+
+function HostingMock({ step }: MockProps) {
+  const shown = step + 1;
+  return (
+    <div className="grid size-full items-end gap-4 px-5 pt-8 @2xl:grid-cols-[1.25fr_1fr] @2xl:px-10">
+      <Window url="ec2-instance · ssh" className="w-full">
+        <div className="bg-ink-950 p-4 font-mono text-[11px] leading-6 text-ink-200">
+          {HOST_LOG.map((line, i) => (
+            <p
+              key={line}
+              className={clsx(
+                "whitespace-pre transition-all duration-300",
+                i < shown ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0",
+                line.startsWith("HTTP") && "text-emerald-300",
+              )}
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+      </Window>
+      <div className="hidden rounded-t-xl bg-white p-5 shadow-float @2xl:block">
+        <p className="text-sm font-semibold text-ink-950">Services</p>
+        <ul className="mt-3 space-y-2.5">
+          {HOST_SERVICES.map((name, i) => (
+            <li
+              key={name}
+              className={clsx(
+                "flex items-center justify-between rounded-lg border border-ink-100 px-3 py-2 text-xs transition-all duration-300",
+                step >= i ? "opacity-100" : "opacity-30",
+              )}
+            >
+              <span className="text-ink-800">{name}</span>
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700">
+                up
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+/* 4. DORA metrics: before and after automation (your real DWTS numbers) */
+const DORA = [
+  { label: "Deployment lead time", before: "4.2 hours", after: "< 6 min" },
+  { label: "Change failure rate", before: "34%", after: "4%" },
+  { label: "Time to recovery", before: "—", after: "11 min" },
+  { label: "Deployment frequency", before: "baseline", after: "+750%" },
+];
+
+function DoraMock({ step }: MockProps) {
+  const after = step >= 2;
+  return (
+    <div className="flex size-full items-end justify-center px-5 pt-8">
+      <div className="w-full max-w-sm rounded-t-xl bg-white p-5 shadow-float">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-ink-950">DWTS · DORA metrics</p>
+          <span
+            className={clsx(
+              "rounded-full px-2.5 py-0.5 text-[11px] font-medium transition-colors",
+              after ? "bg-emerald-100 text-emerald-700" : "bg-coral-400/25 text-coral-500",
+            )}
+          >
+            {after ? "With CI/CD" : "Manual deploys"}
+          </span>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          {DORA.map((metric) => (
+            <div key={metric.label} className="rounded-lg bg-ink-50 p-3">
+              <p className="text-[11px] text-ink-500">{metric.label}</p>
+              <p className="mt-1 text-lg font-semibold text-ink-950 tabular-nums">
+                {after ? metric.after : metric.before}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4">
+          <p className="text-[11px] text-ink-500">Pipeline automation</p>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-ink-100">
+            <div
+              className="h-full origin-left rounded-full bg-linear-to-r from-brand-500 to-pink-400 transition-transform duration-700"
+              style={{ transform: `scaleX(${after ? 1 : 0.15})` }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* 5. Code quality: findings get fixed and the quality gate passes */
+const QUALITY = [
+  { label: "Duplicated code block", fixedAt: 1 },
+  { label: "Vulnerable dependency", fixedAt: 2 },
+  { label: "Unhandled error path", fixedAt: 3 },
+];
+
+function QualityMock({ step }: MockProps) {
+  const open = QUALITY.filter((f) => step < f.fixedAt).length;
+  const Icon = open > 0 ? ShieldAlert : ShieldCheck;
+  return (
+    <div className="flex size-full items-end justify-center px-5 pt-8">
+      <div className="w-full max-w-sm rounded-t-xl bg-white p-5 shadow-float">
         <div className="flex items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-lg bg-brand-50 text-brand-600">
-            <Gauge aria-hidden className="size-5" />
+          <span
+            className={clsx(
+              "grid size-10 place-items-center rounded-lg transition-colors duration-300",
+              open > 0 ? "bg-coral-400/25 text-coral-500" : "bg-emerald-100 text-emerald-700",
+            )}
+          >
+            <Icon aria-hidden className="size-5" />
           </span>
           <div>
-            <p className="text-sm font-semibold text-ink-950">Scale plan</p>
-            <p className="text-xs text-ink-500">Billed monthly</p>
+            <p className="text-sm font-semibold text-ink-950">
+              {open > 0 ? "Quality gate failed" : "Quality gate passed"}
+            </p>
+            <p className="text-xs text-ink-500">SonarQube analysis · build #57</p>
           </div>
         </div>
-        <p className="mt-4 text-sm font-medium text-ink-950">API calls</p>
-        <p className="text-xs text-ink-500">$0.004 per 1,000 calls</p>
-        <div className="mt-3 h-2 overflow-hidden rounded-full bg-ink-100">
-          <div className="h-full origin-left animate-meter rounded-full bg-linear-to-r from-brand-500 to-pink-400" />
-        </div>
-      </div>
-      <div className="w-full max-w-sm rounded-t-xl bg-white p-5 shadow-float">
-        <p className="text-xs text-ink-500">Calls in the last 30 days</p>
-        <p className="mt-1 text-2xl font-semibold text-ink-950 tabular-nums">1,284,906</p>
+        <ul className="mt-4 space-y-2">
+          {QUALITY.map((finding) => {
+            const fixed = step >= finding.fixedAt;
+            return (
+              <li
+                key={finding.label}
+                className="flex items-center justify-between gap-3 rounded-lg border border-ink-100 px-3 py-2 text-xs"
+              >
+                <span
+                  className={clsx(
+                    "transition-colors",
+                    fixed ? "text-ink-400 line-through" : "text-ink-800",
+                  )}
+                >
+                  {finding.label}
+                </span>
+                <span
+                  className={clsx(
+                    "shrink-0 rounded-full px-2 py-0.5 font-medium transition-colors",
+                    fixed ? "bg-emerald-100 text-emerald-700" : "bg-coral-400/25 text-coral-500",
+                  )}
+                >
+                  {fixed ? "Fixed" : "Open"}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );
 }
 
-const accounts = [
-  {
-    name: "Fieldnote Studio",
-    country: "Canada",
-    balance: "$6,120.00",
-    volume: "$58,904.20",
-    dot: "bg-brand-500",
-  },
-  {
-    name: "Harbor & Pine",
-    country: "United States",
-    balance: "$2,480.50",
-    volume: "$31,260.75",
-    dot: "bg-coral-500",
-  },
-  {
-    name: "Orbit Fitness",
-    country: "United Kingdom",
-    balance: "$940.00",
-    volume: "$12,718.40",
-    dot: "bg-violet-500",
-  },
-  {
-    name: "Tallow Candle Co",
-    country: "Australia",
-    balance: "$1,732.10",
-    volume: "$9,845.00",
-    dot: "bg-pink-400",
-  },
-  {
-    name: "Lumen Pottery",
-    country: "Canada",
-    balance: "$310.00",
-    volume: "$4,260.90",
-    dot: "bg-ink-700",
-  },
-  {
-    name: "Kite & Thread",
-    country: "United States",
-    balance: "$4,005.00",
-    volume: "$22,317.30",
-    dot: "bg-brand-700",
-  },
+/* 6. Full stack: a deploy script runs line by line */
+const DEPLOY_SCRIPT = [
+  "#!/usr/bin/env bash",
+  "set -euo pipefail",
+  "git pull origin main",
+  "docker compose build web",
+  "docker compose up -d",
 ];
+const DEPLOY_OUTPUT = ["web image built ✓", "containers up ✓", "Health check passed · live"];
 
-function PlatformMock() {
+function FullStackMock({ step }: MockProps) {
   return (
-    <div className="relative size-full px-5 pt-8 @2xl:px-10">
-      <Window url="app.fieldwork.example" className="h-full">
-        <div className="p-5">
-          <p className="text-sm font-semibold text-ink-950">Connected accounts</p>
-          <table className="mt-4 w-full text-left text-xs">
-            <thead className="text-ink-500">
-              <tr>
-                <th className="pb-2 font-medium">Account</th>
-                <th className="hidden pb-2 font-medium @lg:table-cell">Country</th>
-                <th className="hidden pb-2 font-medium @xl:table-cell">Balance</th>
-                <th className="pb-2 text-right font-medium">Volume</th>
-              </tr>
-            </thead>
-            <tbody>
-              {accounts.map((account, i) => (
-                <tr
-                  key={account.name}
-                  className="animate-fade-up border-t border-ink-100"
-                  style={{ animationDelay: `${i * 90}ms` }}
-                >
-                  <td className="py-2.5 font-medium text-ink-900">
-                    <span
-                      className={clsx(
-                        "mr-2 inline-grid size-5 place-items-center rounded-full text-[10px] text-white",
-                        account.dot,
-                      )}
-                    >
-                      {account.name[0]}
-                    </span>
-                    {account.name}
-                  </td>
-                  <td className="hidden py-2.5 text-ink-600 @lg:table-cell">{account.country}</td>
-                  <td className="hidden py-2.5 text-ink-600 tabular-nums @xl:table-cell">
-                    {account.balance}
-                  </td>
-                  <td className="py-2.5 text-right text-ink-900 tabular-nums">{account.volume}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="flex size-full items-end justify-center px-5 pt-8">
+      <Window url="deploy.sh" className="w-full max-w-md">
+        <div className="bg-ink-950 p-4 font-mono text-[11px] leading-6">
+          {DEPLOY_SCRIPT.map((line, i) => (
+            <p
+              key={line}
+              className={clsx(
+                "rounded px-2 whitespace-pre transition-colors duration-300",
+                i === step ? "bg-brand-600/40 text-white" : "text-ink-300",
+              )}
+            >
+              <span className="mr-3 inline-block w-3 text-right text-ink-500 select-none">
+                {i + 1}
+              </span>
+              {line}
+            </p>
+          ))}
+          <div className="mt-3 border-t border-white/10 pt-3">
+            {DEPLOY_OUTPUT.map((line, i) => (
+              <p
+                key={line}
+                className={clsx(
+                  "px-2 whitespace-pre transition-opacity duration-300",
+                  step >= i + 2 ? "opacity-100" : "opacity-0",
+                  i === DEPLOY_OUTPUT.length - 1 ? "text-emerald-300" : "text-ink-200",
+                )}
+              >
+                {line}
+              </p>
+            ))}
+          </div>
         </div>
       </Window>
-      <div className="absolute bottom-6 left-5 hidden w-64 rounded-lg bg-white p-3 shadow-float @lg:block @2xl:left-10">
-        <p className="text-xs font-semibold text-ink-950">Payouts</p>
-        <p className="mt-0.5 text-[11px] text-ink-500">
-          Show balances and let accounts withdraw funds.
-        </p>
-        <code className="mt-2 block rounded bg-ink-50 px-2 py-1 font-mono text-[10px] text-ink-700">
-          {'<ZenithEmbed component="payouts" />'}
-        </code>
-      </div>
     </div>
   );
 }
 
-const products = [
-  { name: "Trail Shell", detail: "Moss · Medium", price: "$98.00" },
-  { name: "Ridge Fleece", detail: "Slate · Medium", price: "$84.00" },
-];
-
-function AssistantsMock() {
-  return (
-    <div className="flex size-full flex-col justify-end gap-3 px-5 pt-6 pb-5">
-      <p className="max-w-[85%] animate-loop-in self-start rounded-2xl rounded-bl-sm bg-white px-4 py-2.5 text-sm text-ink-900 shadow-card">
-        Looking for a warm jacket for autumn hikes, under $120?
-      </p>
-      <p
-        className="max-w-[92%] animate-loop-in self-end rounded-2xl rounded-br-sm bg-ink-950 px-4 py-2.5 text-sm text-white shadow-card"
-        style={{ animationDelay: "1.2s" }}
-      >
-        Here are two great fits:
-      </p>
-      <div
-        className="grid animate-loop-in grid-cols-2 gap-2 rounded-xl bg-white p-3 shadow-float"
-        style={{ animationDelay: "2.4s" }}
-      >
-        {products.map((product) => (
-          <div key={product.name} className="rounded-lg border border-ink-100 p-2">
-            <div className="grid h-14 place-items-center rounded-md bg-ink-50 text-ink-400">
-              <ShoppingBag aria-hidden className="size-6" />
-            </div>
-            <p className="mt-2 text-xs font-semibold text-ink-950">{product.name}</p>
-            <p className="text-[11px] text-ink-500">{product.detail}</p>
-            <p className="mt-1 text-xs font-medium text-ink-900">{product.price}</p>
-          </div>
-        ))}
-        <div className="col-span-2 grid h-9 place-items-center rounded-lg bg-brand-600 text-sm font-semibold text-white">
-          Buy now
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CardsMock() {
-  return (
-    <div className="grid size-full place-items-center px-6">
-      <div className="relative aspect-[1.586/1] w-full max-w-xs animate-float overflow-hidden rounded-2xl bg-linear-to-br from-ink-900 via-brand-800 to-violet-600 p-5 text-white shadow-float">
-        <div className="flex items-start justify-between">
-          <span className="text-sm font-bold tracking-wide">ZENITH</span>
-          <Wifi aria-hidden className="size-5 rotate-90 opacity-80" />
-        </div>
-        <div className="mt-6 h-7 w-9 rounded-md bg-linear-to-br from-amber-200 to-amber-400" />
-        <p className="mt-5 font-mono text-sm tracking-widest">•••• •••• •••• 7305</p>
-        <div className="mt-3 flex items-end justify-between text-[11px] text-white/80">
-          <span>ALEX MORGAN</span>
-          <span>09/29</span>
-        </div>
-        <div
-          aria-hidden
-          className="absolute inset-y-0 left-0 w-1/3 animate-shimmer bg-linear-to-r from-transparent via-white/25 to-transparent"
-        />
-      </div>
-    </div>
-  );
-}
-
-// A sphere made of dots, generated once with plain arithmetic so server and browser agree.
-const GLOBE_DOTS = (() => {
-  const dots: { x: number; y: number; o: number }[] = [];
-  const n = 24;
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      const x = ((i + 0.5) / n) * 200;
-      const y = ((j + 0.5) / n) * 200;
-      if ((x - 100) ** 2 + (y - 100) ** 2 > 94 ** 2) continue;
-      if ((i * 31 + j * 17 + ((i * j) % 7)) % 4 === 0) continue;
-      dots.push({
-        x: Math.round(x * 10) / 10,
-        y: Math.round(y * 10) / 10,
-        o: 0.3 + ((i * 7 + j * 13) % 5) * 0.12,
-      });
-    }
-  }
-  return dots;
-})();
-
-const ROUTE_A = "M52 128 Q 88 40 150 78";
-const ROUTE_B = "M150 78 Q 172 124 118 160";
-
-function StablecoinsMock() {
-  return (
-    <div className="relative size-full p-4">
-      <svg viewBox="0 0 200 200" aria-hidden className="size-full">
-        {GLOBE_DOTS.map((dot) => (
-          <circle
-            key={`${dot.x}-${dot.y}`}
-            cx={dot.x}
-            cy={dot.y}
-            r="1.7"
-            className="fill-brand-600"
-            opacity={dot.o}
-          />
-        ))}
-        <path
-          d={ROUTE_A}
-          fill="none"
-          strokeWidth="1.2"
-          strokeDasharray="3 3"
-          className="stroke-violet-500"
-        />
-        <path
-          d={ROUTE_B}
-          fill="none"
-          strokeWidth="1.2"
-          strokeDasharray="3 3"
-          className="stroke-pink-500"
-        />
-        {[
-          [52, 128],
-          [150, 78],
-          [118, 160],
-        ].map(([cx, cy]) => (
-          <circle
-            key={`${cx}-${cy}`}
-            cx={cx}
-            cy={cy}
-            r="4.5"
-            strokeWidth="1.6"
-            className="fill-white stroke-brand-600"
-          />
-        ))}
-        <circle r="3.2" className="fill-violet-600 motion-reduce:hidden">
-          <animateMotion dur="3.6s" repeatCount="indefinite" path={ROUTE_A} />
-        </circle>
-        <circle r="3.2" className="fill-pink-500 motion-reduce:hidden">
-          <animateMotion dur="3.6s" begin="1.2s" repeatCount="indefinite" path={ROUTE_B} />
-        </circle>
-      </svg>
-      <div className="absolute bottom-5 left-5 animate-fade-up rounded-lg bg-white px-3 py-2 shadow-float">
-        <p className="text-[11px] text-ink-500">Sent · settled in 3 seconds</p>
-        <p className="text-sm font-semibold text-ink-950 tabular-nums">$8,240.00</p>
-      </div>
-    </div>
-  );
-}
-
-const mocks: Record<FeatureId, ComponentType> = {
-  payments: PaymentsMock,
-  billing: BillingMock,
-  platform: PlatformMock,
-  assistants: AssistantsMock,
-  cards: CardsMock,
-  stablecoins: StablecoinsMock,
+const mocks: Record<FeatureId, ComponentType<MockProps>> = {
+  pipelines: PipelineMock,
+  containers: KubeMock,
+  hosting: HostingMock,
+  dora: DoraMock,
+  quality: QualityMock,
+  fullstack: FullStackMock,
 };
 
-export function FeatureMock({ id }: { id: FeatureId }) {
+export function FeatureMock({ id, playing }: { id: FeatureId; playing: boolean }) {
+  const reduced = usePrefersReducedMotion();
+  const step = useCycle(playing && !reduced, STEPS, INTERVAL, REST);
   const Mock = mocks[id];
+
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Mock />
+      <Mock step={step} />
     </div>
   );
 }
