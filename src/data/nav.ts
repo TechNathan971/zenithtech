@@ -14,8 +14,7 @@ export type NavMenu = {
   footerLink?: NavItem;
 };
 export type NavEntry =
-  | { type: "menu"; menu: NavMenu }
-  | { type: "link"; label: string; href: string };
+  { type: "menu"; menu: NavMenu } | { type: "link"; label: string; href: string };
 
 /* What we write below: texts that can hold both languages. */
 type ItemSource = { label: Text; href: string; description?: Text };
@@ -28,9 +27,7 @@ type MenuSource = {
   aside?: GroupSource & { promo?: PromoSource };
   footerLink?: ItemSource;
 };
-type EntrySource =
-  | { type: "menu"; menu: MenuSource }
-  | { type: "link"; label: Text; href: string };
+type EntrySource = { type: "menu"; menu: MenuSource } | { type: "link"; label: Text; href: string };
 
 const link = (label: Text, href: string, description?: Text): ItemSource => ({
   label,
@@ -49,40 +46,97 @@ const workMenu: MenuSource = {
     {
       title: ["Projects", "Projets"],
       items: [
-        work("DWTS", "dwts", ["Welfare records for displaced children", "Dossiers sociaux d’enfants déplacés"]),
-        work("MeloKeys", "melokeys", ["Keyboard and audio workstation layouts", "Dispositions de clavier et de station audio"]),
-        work(["CI/CD Lab Pipeline", "Pipeline CI/CD de laboratoire"], "ci-cd-lab-pipeline", ["Jenkins, SonarQube, Nexus and Docker", "Jenkins, SonarQube, Nexus et Docker"]),
-        work(["Senvato Services Portal", "Portail de services Senvato"], "senvato", ["A directory for local trade professionals", "Un annuaire de professionnels des métiers locaux"]),
-        work(["Research Thesis", "Mémoire de recherche"], "research-thesis", ["CI/CD and DORA metrics", "CI/CD et métriques DORA"]),
+        work("DWTS", "dwts", [
+          "Welfare records for displaced children",
+          "Dossiers sociaux d’enfants déplacés",
+        ]),
+        work("MeloKeys", "melokeys", [
+          "Keyboard and audio workstation layouts",
+          "Dispositions de clavier et de station audio",
+        ]),
+        work(["CI/CD Lab Pipeline", "Pipeline CI/CD de laboratoire"], "ci-cd-lab-pipeline", [
+          "Jenkins, SonarQube, Nexus and Docker",
+          "Jenkins, SonarQube, Nexus et Docker",
+        ]),
+        work(["Senvato Services Portal", "Portail de services Senvato"], "senvato", [
+          "A directory for local trade professionals",
+          "Un annuaire de professionnels des métiers locaux",
+        ]),
+        work(["Research Thesis", "Mémoire de recherche"], "research-thesis", [
+          "CI/CD and DORA metrics",
+          "CI/CD et métriques DORA",
+        ]),
       ],
     },
     {
       title: ["Delivery", "Livraison"],
       items: [
-        work(["CI/CD Pipelines", "Pipelines CI/CD"], "ci-cd-pipelines", ["Build, test and release", "Construire, tester, livrer"]),
-        work("GitHub Actions", "github-actions", ["Workflows on every push", "Des workflows à chaque push"]),
-        work(["Jenkins Pipelines", "Pipelines Jenkins"], "jenkins-pipelines", ["Pipeline as code", "Le pipeline en tant que code"]),
-        work(["Release Automation", "Automatisation des releases"], "release-automation", ["Hands-off deployments", "Déploiements sans intervention"]),
-        work(["Rollback Toolkit", "Boîte à outils de rollback"], "rollback-toolkit", ["Undo a release safely", "Annuler une release en sécurité"]),
+        work(["CI/CD Pipelines", "Pipelines CI/CD"], "ci-cd-pipelines", [
+          "Build, test and release",
+          "Construire, tester, livrer",
+        ]),
+        work("GitHub Actions", "github-actions", [
+          "Workflows on every push",
+          "Des workflows à chaque push",
+        ]),
+        work(["Jenkins Pipelines", "Pipelines Jenkins"], "jenkins-pipelines", [
+          "Pipeline as code",
+          "Le pipeline en tant que code",
+        ]),
+        work(["Release Automation", "Automatisation des releases"], "release-automation", [
+          "Hands-off deployments",
+          "Déploiements sans intervention",
+        ]),
+        work(["Rollback Toolkit", "Boîte à outils de rollback"], "rollback-toolkit", [
+          "Undo a release safely",
+          "Annuler une release en sécurité",
+        ]),
       ],
     },
     {
       title: ["Containers and hosting", "Conteneurs et hébergement"],
       items: [
-        work(["Docker Containers", "Conteneurs Docker"], "docker-containers", ["Package once, run anywhere", "Empaqueter une fois, exécuter partout"]),
-        work("Kubernetes", "kubernetes", ["Container orchestration", "Orchestration de conteneurs"]),
-        work(["AWS EC2 Hosting", "Hébergement AWS EC2"], "aws-ec2-hosting", ["Cloud servers", "Serveurs cloud"]),
-        work(["NGINX and Web Servers", "NGINX et serveurs web"], "nginx-web-servers", ["Reverse proxy and serving", "Reverse proxy et service web"]),
-        work(["Tomcat Deployments", "Déploiements Tomcat"], "tomcat-deployments", ["Hosting Java applications", "Hébergement d’applications Java"]),
+        work(["Docker Containers", "Conteneurs Docker"], "docker-containers", [
+          "Package once, run anywhere",
+          "Empaqueter une fois, exécuter partout",
+        ]),
+        work("Kubernetes", "kubernetes", [
+          "Container orchestration",
+          "Orchestration de conteneurs",
+        ]),
+        work(["AWS EC2 Hosting", "Hébergement AWS EC2"], "aws-ec2-hosting", [
+          "Cloud servers",
+          "Serveurs cloud",
+        ]),
+        work(["NGINX and Web Servers", "NGINX et serveurs web"], "nginx-web-servers", [
+          "Reverse proxy and serving",
+          "Reverse proxy et service web",
+        ]),
+        work(["Tomcat Deployments", "Déploiements Tomcat"], "tomcat-deployments", [
+          "Hosting Java applications",
+          "Hébergement d’applications Java",
+        ]),
       ],
     },
     {
       title: ["Quality and metrics", "Qualité et métriques"],
       items: [
-        work(["Code Quality", "Qualité du code"], "code-quality", ["Automated analysis with SonarQube", "Analyse automatisée avec SonarQube"]),
-        work(["Artifact Repositories", "Dépôts d’artefacts"], "artifact-repositories", ["Versioned builds with Nexus", "Builds versionnés avec Nexus"]),
-        work(["DORA Metrics", "Métriques DORA"], "dora-metrics", ["Measure delivery performance", "Mesurer la performance de livraison"]),
-        work(["Test Environments", "Environnements de test"], "test-environments", ["Ready in minutes", "Prêts en quelques minutes"]),
+        work(["Code Quality", "Qualité du code"], "code-quality", [
+          "Automated analysis with SonarQube",
+          "Analyse automatisée avec SonarQube",
+        ]),
+        work(["Artifact Repositories", "Dépôts d’artefacts"], "artifact-repositories", [
+          "Versioned builds with Nexus",
+          "Builds versionnés avec Nexus",
+        ]),
+        work(["DORA Metrics", "Métriques DORA"], "dora-metrics", [
+          "Measure delivery performance",
+          "Mesurer la performance de livraison",
+        ]),
+        work(["Test Environments", "Environnements de test"], "test-environments", [
+          "Ready in minutes",
+          "Prêts en quelques minutes",
+        ]),
       ],
     },
   ],
@@ -90,8 +144,14 @@ const workMenu: MenuSource = {
     title: ["More", "Plus"],
     items: [
       work(["Open Source", "Open source"], "open-source", ["Repos on GitHub", "Dépôts sur GitHub"]),
-      link(["Case Studies", "Études de cas"], "/case-studies", ["How each project was built", "Comment chaque projet a été construit"]),
-      link(["Roadmap", "Feuille de route"], "/roadmap", ["What I’m learning next", "Ce que j’apprends ensuite"]),
+      link(["Case Studies", "Études de cas"], "/case-studies", [
+        "How each project was built",
+        "Comment chaque projet a été construit",
+      ]),
+      link(["Roadmap", "Feuille de route"], "/roadmap", [
+        "What I’m learning next",
+        "Ce que j’apprends ensuite",
+      ]),
     ],
     promo: {
       title: ["Research thesis", "Mémoire de recherche"],
@@ -112,10 +172,34 @@ const servicesMenu: MenuSource = {
     {
       title: ["What I offer", "Ce que je propose"],
       items: [
-        service(["CI/CD pipeline automation and infrastructure setup", "Automatisation CI/CD et mise en place d’infrastructure"], "ci-cd-automation"),
-        service(["Full-stack development and API integration", "Développement full-stack et intégration d’API"], "full-stack-development"),
-        service(["Server configuration, hosting and NGINX", "Configuration de serveurs, hébergement et NGINX"], "server-and-hosting"),
-        service(["Tech tutoring and ICT package training", "Cours d’informatique et formation aux logiciels TIC"], "tutoring-and-training"),
+        service(
+          [
+            "CI/CD pipeline automation and infrastructure setup",
+            "Automatisation CI/CD et mise en place d’infrastructure",
+          ],
+          "ci-cd-automation",
+        ),
+        service(
+          [
+            "Full-stack development and API integration",
+            "Développement full-stack et intégration d’API",
+          ],
+          "full-stack-development",
+        ),
+        service(
+          [
+            "Server configuration, hosting and NGINX",
+            "Configuration de serveurs, hébergement et NGINX",
+          ],
+          "server-and-hosting",
+        ),
+        service(
+          [
+            "Tech tutoring and ICT package training",
+            "Cours d’informatique et formation aux logiciels TIC",
+          ],
+          "tutoring-and-training",
+        ),
       ],
     },
     {
@@ -123,7 +207,10 @@ const servicesMenu: MenuSource = {
       items: [
         service(["Launch a web product", "Lancer un produit web"], "launch-a-product"),
         service(["Automate deployments", "Automatiser les déploiements"], "automate-deployments"),
-        service(["Host and secure a website", "Héberger et sécuriser un site web"], "host-a-website"),
+        service(
+          ["Host and secure a website", "Héberger et sécuriser un site web"],
+          "host-a-website",
+        ),
         service(["Move to the cloud", "Passer au cloud"], "move-to-the-cloud"),
         service(["Learn the tools", "Apprendre les outils"], "learn-the-tools"),
       ],
@@ -131,10 +218,16 @@ const servicesMenu: MenuSource = {
     {
       title: ["By sector", "Par secteur"],
       items: [
-        service(["Humanitarian and nonprofits", "Humanitaire et associations"], "humanitarian-nonprofits"),
+        service(
+          ["Humanitarian and nonprofits", "Humanitaire et associations"],
+          "humanitarian-nonprofits",
+        ),
         service(["Education and training", "Éducation et formation"], "education-training"),
         service(["Music and audio", "Musique et audio"], "music-audio"),
-        service(["Marketplaces and directories", "Places de marché et annuaires"], "marketplaces-directories"),
+        service(
+          ["Marketplaces and directories", "Places de marché et annuaires"],
+          "marketplaces-directories",
+        ),
         service(["Local businesses", "Entreprises locales"], "local-businesses"),
         service("Startups", "startups"),
       ],
@@ -170,7 +263,10 @@ const learnMenu: MenuSource = {
         guide(["Deploy to Kubernetes", "Déployer sur Kubernetes"], "deploy-to-kubernetes"),
         guide(["Write Terraform modules", "Écrire des modules Terraform"], "terraform-modules"),
         guide(["Monitor with Prometheus", "Superviser avec Prometheus"], "monitor-with-prometheus"),
-        guide(["Secure the supply chain", "Sécuriser la chaîne logicielle"], "secure-the-supply-chain"),
+        guide(
+          ["Secure the supply chain", "Sécuriser la chaîne logicielle"],
+          "secure-the-supply-chain",
+        ),
         guide(["Automate with scripts", "Automatiser avec des scripts"], "automate-with-scripts"),
       ],
     },

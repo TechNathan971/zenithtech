@@ -37,6 +37,14 @@ export function FeatureCard({ feature, onExpand }: FeatureCardProps) {
         feature.split && "lg:flex-row",
       )}
     >
+      {/* One invisible button covers the whole tile. It is never scaled or moved. */}
+      <button
+        type="button"
+        onClick={() => onExpand(feature)}
+        aria-label={`${t(["Expand", "Agrandir"])} : ${feature.title}`}
+        className="absolute inset-0 z-[1] cursor-pointer focus-visible:outline-none"
+      />
+
       <div
         className={clsx(
           "flex items-start justify-between gap-4 p-6 sm:p-8",
@@ -64,21 +72,15 @@ export function FeatureCard({ feature, onExpand }: FeatureCardProps) {
             ))}
           </ul>
         </div>
-        {/* This button's ::after stretches over the whole tile, so a click anywhere expands it. */}
-        <button
-          type="button"
-          onClick={() => onExpand(feature)}
-          aria-label={`${t(["Expand", "Agrandir"])} : ${feature.title}`}
-          className="grid size-9 shrink-0 cursor-pointer place-items-center rounded-lg bg-brand-50 text-brand-600 transition-all duration-200 group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white after:absolute after:inset-0"
+        <span
+          aria-hidden
+          className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-600 transition-all duration-200 group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white"
         >
-          <Maximize2 aria-hidden className="size-4" />
-        </button>
+          <Maximize2 className="size-4" />
+        </span>
       </div>
 
-      <div
-        aria-hidden
-        className={clsx("@container relative min-h-72 flex-1 sm:min-h-80", feature.surface)}
-      >
+      <div aria-hidden className={clsx("@container relative min-h-72 flex-1 sm:min-h-80", feature.surface)}>
         <FeatureMock id={feature.id} playing={hovered || focused} />
         <span className="pointer-events-none absolute right-3 bottom-3 translate-y-1 rounded-full bg-ink-950/80 px-3 py-1 text-xs font-medium text-white opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 max-sm:hidden">
           {t(["Click to expand", "Cliquer pour agrandir"])}
