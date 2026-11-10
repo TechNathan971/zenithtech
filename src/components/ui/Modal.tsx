@@ -6,10 +6,11 @@ type ModalProps = {
   open: boolean;
   onClose: () => void;
   label: string;
+  closeLabel?: string;
   children: ReactNode;
 };
 
-export function Modal({ open, onClose, label, children }: ModalProps) {
+export function Modal({ open, onClose, label, closeLabel = "Close", children }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   // Open or close the native <dialog>
@@ -46,7 +47,7 @@ export function Modal({ open, onClose, label, children }: ModalProps) {
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={closeLabel}
             className="absolute top-3 right-3 z-10 grid size-9 place-items-center rounded-full bg-white/90 text-ink-700 shadow-card hover:bg-white hover:text-ink-950"
           >
             <X aria-hidden className="size-5" />
