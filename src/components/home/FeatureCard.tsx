@@ -80,7 +80,10 @@ export function FeatureCard({ feature, onExpand }: FeatureCardProps) {
         </span>
       </div>
 
-      <div aria-hidden className={clsx("@container relative min-h-72 flex-1 sm:min-h-80", feature.surface)}>
+      <div
+        aria-hidden
+        className={clsx("@container relative min-h-72 flex-1 sm:min-h-80", feature.surface)}
+      >
         <FeatureMock id={feature.id} playing={hovered || focused} />
         <span className="pointer-events-none absolute right-3 bottom-3 translate-y-1 rounded-full bg-ink-950/80 px-3 py-1 text-xs font-medium text-white opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 max-sm:hidden">
           {t(["Click to expand", "Cliquer pour agrandir"])}
