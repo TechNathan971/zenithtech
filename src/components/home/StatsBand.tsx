@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { stats } from "@/data/stats";
 import { useI18n } from "@/hooks/useI18n";
 import type { Text } from "@/lib/i18n";
+import { BurstCanvas } from "./BurstCanvas";
 
 type ThemeId = "predawn" | "sunrise" | "daytime" | "dusk" | "sunset" | "night";
 
@@ -69,6 +70,10 @@ const themes: Theme[] = [
   },
 ];
 
+/* The highlight line fades out at both ends; the glow fades out from the bottom centre */
+const LINE_MASK = "linear-gradient(90deg, transparent, #000 50%, transparent)";
+const GLOW_MASK = "radial-gradient(closest-side at 50% 100%, #000, transparent)";
+
 /* The theme that matches the visitor's local time */
 function autoTheme(): ThemeId {
   const hour = new Date().getHours();
@@ -85,21 +90,6 @@ function subscribe(onChange: () => void) {
   const id = setInterval(onChange, 60_000);
   return () => clearInterval(id);
 }
-
-/* A half-circle of fine strands with a dot at each tip. Plain arithmetic keeps server and browser identical. */
-const STRANDS = 110;
-const round = (n: number) => Math.round(n * 10) / 10;
-const strands = Array.from({ length: STRANDS }, (_, i) => {
-  const angle = (190 + (i / (STRANDS - 1)) * 160) * (Math.PI / 180);
-  const length = 150 + ((i * 47) % 140) + ((i * 13) % 60);
-  return {
-    x1: round(600 + Math.cos(angle) * 24),
-    y1: round(440 + Math.sin(angle) * 24),
-    x2: round(600 + Math.cos(angle) * length),
-    y2: round(440 + Math.sin(angle) * length),
-    o: 0.3 + ((i * 29) % 70) / 100,
-  };
-});
 
 function ThemeMenu({ value, onChange }: { value: Theme; onChange: (id: ThemeId) => void }) {
   const { t } = useI18n();
@@ -175,6 +165,7 @@ export function StatsBand() {
   const { t } = useI18n();
   const auto = useSyncExternalStore(subscribe, autoTheme, (): ThemeId => "daytime");
   const [override, setOverride] = useState<ThemeId | null>(null);
+  const [activeStat, setActiveStat] = useState(0);
   const current = themes.find((theme) => theme.id === (override ?? auto)) ?? themes[2];
 
   return (
@@ -192,53 +183,91 @@ export function StatsBand() {
       ))}
 
       <Container>
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-10 pt-14 pb-6 lg:grid-cols-4">
-          {stats.map((stat) => (
-            <div key={stat.value} className="flex flex-col-reverse gap-2">
-              <dt
-                className={clsx(
-                  "max-w-[16rem] text-sm transition-colors duration-700",
-                  current.dark ? "text-ink-200" : "text-ink-600",
-                )}
+        <dl
+          className={clsx(
+            "mt-14 grid grid-cols-2 border-y transition-colors duration-700 lg:grid-cols-4",
+            current.dark ? "border-white/10" : "border-ink-100",
+          )}
+        >
+          {stats.map((stat, index) => {
+            const active = index === activeStat;
+            return (
+              <div
+                key={stat.value}
+                tabIndex={0}
+                onPointerEnter={(e) => {
+                  if (e.pointerType === "mouse") setActiveStat(index);
+                }}
+                onFocus={() => setActiveStat(index)}
+                onClick={() => setActiveStat(index)}
+                className="relative flex cursor-default flex-col-reverse items-center gap-2 px-3 py-9 text-center outline-offset-[-4px]"
               >
-                {t(stat.label)}
-              </dt>
-              <dd
-                className={clsx(
-                  "text-5xl font-semibold tracking-tight tabular-nums transition-colors duration-700 sm:text-6xl",
-                  current.dark ? "text-white" : "text-ink-950",
-                )}
-              >
-                {stat.value}
-              </dd>
-            </div>
-          ))}
+                {/* soft glow under the active stat, in the theme colour */}
+                <span
+                  aria-hidden
+                  className={clsx(
+                    "pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-current transition-[color,opacity] duration-500",
+                    active ? "opacity-15" : "opacity-0",
+                  )}
+                  style={{
+                    color: current.stroke,
+                    maskImage: GLOW_MASK,
+                    WebkitMaskImage: GLOW_MASK,
+                  }}
+                />
+                {/* highlight lines on the top and bottom edge, in the theme colour */}
+                {["-top-px", "-bottom-px"].map((position) => (
+                  <span
+                    key={position}
+                    aria-hidden
+                    className={clsx(
+                      "pointer-events-none absolute inset-x-4 h-0.5 bg-current transition-[color,opacity] duration-500",
+                      position,
+                      active ? "opacity-100" : "opacity-0",
+                    )}
+                    style={{
+                      color: current.stroke,
+                      maskImage: LINE_MASK,
+                      WebkitMaskImage: LINE_MASK,
+                    }}
+                  />
+                ))}
+                <dt
+                  className={clsx(
+                    "max-w-[16rem] text-sm transition-colors duration-500",
+                    active
+                      ? current.dark
+                        ? "text-ink-100"
+                        : "text-ink-800"
+                      : current.dark
+                        ? "text-white/40"
+                        : "text-ink-400",
+                  )}
+                >
+                  {t(stat.label)}
+                </dt>
+                <dd
+                  className={clsx(
+                    "text-4xl font-medium tracking-tight tabular-nums transition-colors duration-500 sm:text-5xl",
+                    active
+                      ? current.dark
+                        ? "text-white"
+                        : "text-ink-950"
+                      : current.dark
+                        ? "text-white/40"
+                        : "text-ink-400",
+                  )}
+                >
+                  {stat.value}
+                </dd>
+              </div>
+            );
+          })}
         </dl>
       </Container>
 
       <div className="relative">
-        <svg
-          viewBox="0 0 1200 440"
-          preserveAspectRatio="xMidYMax slice"
-          aria-hidden
-          className="block h-80 w-full transition-[color] duration-700 sm:h-96"
-          style={{ color: current.stroke }}
-        >
-          {strands.map((s, i) => (
-            <g key={i}>
-              <line
-                x1={s.x1}
-                y1={s.y1}
-                x2={s.x2}
-                y2={s.y2}
-                stroke="currentColor"
-                strokeWidth="1"
-                strokeOpacity={s.o}
-              />
-              <circle cx={s.x2} cy={s.y2} r="2.4" fill="currentColor" fillOpacity={s.o} />
-            </g>
-          ))}
-        </svg>
+        <BurstCanvas color={current.stroke} className="block h-80 w-full sm:h-96" />
         <div className="absolute top-4 right-4 sm:right-8">
           <ThemeMenu value={current} onChange={setOverride} />
         </div>

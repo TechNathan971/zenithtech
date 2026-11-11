@@ -10,7 +10,7 @@ function LogoRow({ hidden = false }: { hidden?: boolean }) {
   return (
     <ul
       aria-hidden={hidden || undefined}
-      className={clsx("flex shrink-0 items-center gap-16 pr-16", hidden && "motion-reduce:hidden")}
+      className={clsx("flex shrink-0 items-center gap-12 pr-12", hidden && "motion-reduce:hidden")}
     >
       {heroLogos.map((logo) => (
         <li key={logo.slug}>
@@ -18,8 +18,8 @@ function LogoRow({ hidden = false }: { hidden?: boolean }) {
             href={customerHref(logo.slug)}
             tabIndex={hidden ? -1 : undefined}
             className={clsx(
-              "block py-3 text-xl whitespace-nowrap text-ink-500 transition-[transform,color] duration-200 ease-out select-none",
-              "hover:-translate-y-1.5 hover:text-ink-950 focus-visible:-translate-y-1.5 focus-visible:text-ink-950",
+              "block py-2 text-base whitespace-nowrap text-ink-500 transition-[transform,color] duration-200 ease-out select-none",
+              "hover:-translate-y-1 hover:text-ink-950 focus-visible:-translate-y-1 focus-visible:text-ink-950",
               logo.className,
             )}
           >
@@ -37,7 +37,7 @@ export function LogoStrip() {
   return (
     <section
       aria-label={t(["Tools and technologies", "Outils et technologies"])}
-      className="group/marquee relative overflow-hidden border-y border-ink-100 bg-white py-6 motion-reduce:overflow-x-auto"
+      className="group/marquee relative overflow-hidden border-y border-ink-100 bg-white py-5 motion-reduce:overflow-x-auto"
     >
       <div className="flex w-max animate-marquee will-change-transform group-focus-within/marquee:[animation-play-state:paused] group-hover/marquee:[animation-play-state:paused] motion-reduce:animate-none">
         <LogoRow />
