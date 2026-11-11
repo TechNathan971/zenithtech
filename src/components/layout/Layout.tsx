@@ -34,10 +34,13 @@ export function Layout({ title, description = site.description, children }: Layo
       </a>
       <div className="flex min-h-screen flex-col">
         <Header />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        {/* The page frame: thin vertical lines on both sides, like the original */}
+        <div className="mx-auto flex w-full max-w-[1320px] flex-1 flex-col sm:border-x sm:border-ink-100">
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </div>
       </div>
     </>
   );
