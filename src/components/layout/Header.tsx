@@ -147,7 +147,7 @@ export function Header() {
       onBlur={handleBlur}
       className="sticky top-0 z-50 border-b border-ink-100 bg-white"
     >
-      <Container className="flex h-16 items-center justify-between">
+      <Container className="flex h-16 items-center justify-between sm:w-[calc(100%_-_3rem)] sm:max-w-[1320px]">
         <div className="flex items-center gap-8">
           <Link
             href="/"
