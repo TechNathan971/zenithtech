@@ -11,7 +11,7 @@ export function GuideSection({ as = "h2" }: { as?: "h1" | "h2" }) {
       <Container>
         <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
           <div>
-            <Heading className="text-4xl leading-tight font-semibold sm:text-5xl">
+            <Heading className="text-2xl leading-tight font-medium sm:text-3xl lg:text-4xl">
               {t(["Not sure where to start?", "Pas sûr par où commencer ?"])}
             </Heading>
             <p className="mt-4 max-w-md text-lg text-ink-600">

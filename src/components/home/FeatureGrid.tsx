@@ -69,7 +69,7 @@ export function FeatureGrid() {
   return (
     <section className="py-20 sm:py-28">
       <Container>
-        <h2 className="max-w-4xl text-4xl leading-tight font-semibold sm:text-5xl">
+        <h2 className="text-2xl leading-tight font-medium sm:text-3xl lg:text-4xl">
           <span className="text-ink-950">
             {t([
               "Everything between a commit and production.",

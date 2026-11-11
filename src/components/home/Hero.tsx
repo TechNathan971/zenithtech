@@ -20,31 +20,30 @@ export function Hero() {
         className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-b from-transparent to-white"
       />
 
-      <Container className="relative pt-14 pb-20 sm:pt-20 sm:pb-28 lg:pt-28 lg:pb-36">
+      <Container className="relative pt-12 pb-16 sm:pt-16 sm:pb-20 lg:pt-20 lg:pb-24">
         <div className="animate-fade-up">
           <LiveStatus />
         </div>
         <h1
-          className="mt-6 max-w-2xl animate-fade-up text-5xl font-semibold sm:text-6xl lg:text-7xl"
+          className="mt-6 max-w-5xl animate-fade-up text-3xl leading-[1.15] font-medium tracking-tight sm:text-4xl lg:text-[2.75rem]"
           style={{ animationDelay: "80ms" }}
         >
-          {t([
-            "Engineering that ships, scales and stays up.",
-            "Une ingénierie qui livre, évolue et tient bon.",
-          ])}
+          <span className="text-ink-950">
+            {t([
+              "Engineering that ships, scales and stays up.",
+              "Une ingénierie qui livre, évolue et tient bon.",
+            ])}
+          </span>{" "}
+          <span className="text-ink-500">
+            {t([
+              "I’m a DevOps engineer building the pipelines, cloud platforms and automation that carry software from commit to production.",
+              "Je suis ingénieur DevOps : je conçois les pipelines, les plateformes cloud et l’automatisation qui portent un logiciel du commit jusqu’à la production.",
+            ])}
+          </span>
         </h1>
-        <p
-          className="mt-6 max-w-xl animate-fade-up text-lg text-ink-600 sm:text-xl"
-          style={{ animationDelay: "160ms" }}
-        >
-          {t([
-            "I’m a DevOps engineer. I design the pipelines, cloud platforms and automation that carry software from a commit to production, and keep it reliable once it gets there.",
-            "Je suis ingénieur DevOps. Je conçois les pipelines, les plateformes cloud et l’automatisation qui portent un logiciel du premier commit jusqu’à la production, et le gardent fiable une fois là-bas.",
-          ])}
-        </p>
         <div
-          className="mt-10 flex animate-fade-up flex-wrap gap-3"
-          style={{ animationDelay: "240ms" }}
+          className="mt-8 flex animate-fade-up flex-wrap gap-3"
+          style={{ animationDelay: "160ms" }}
         >
           <Button href="/get-started" size="lg" arrow>
             {t(["Get started", "Commencer"])}

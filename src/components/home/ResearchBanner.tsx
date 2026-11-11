@@ -24,7 +24,7 @@ export function ResearchBanner() {
               <p className="text-sm font-semibold tracking-widest text-brand-200 uppercase">
                 {t(["Research", "Recherche"])}
               </p>
-              <h2 className="mt-4 max-w-xl text-4xl leading-tight font-semibold text-white sm:text-5xl">
+              <h2 className="mt-4 max-w-xl text-2xl leading-tight font-medium text-white sm:text-3xl lg:text-4xl">
                 {t([
                   "Measuring CI/CD with DORA metrics",
                   "Mesurer le CI/CD avec les métriques DORA",

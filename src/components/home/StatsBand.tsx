@@ -267,7 +267,7 @@ export function StatsBand() {
       </Container>
 
       <div className="relative">
-        <BurstCanvas color={current.stroke} className="block h-80 w-full sm:h-96" />
+        <BurstCanvas color={current.stroke} className="block h-80 w-full sm:h-[26rem] lg:h-[30rem]" />
         <div className="absolute top-4 right-4 sm:right-8">
           <ThemeMenu value={current} onChange={setOverride} />
         </div>
