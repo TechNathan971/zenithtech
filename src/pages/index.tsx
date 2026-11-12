@@ -4,7 +4,6 @@ import { Hero } from "@/components/home/Hero";
 import { LogoStrip } from "@/components/home/LogoStrip";
 import { LoopSection } from "@/components/home/LoopSection";
 import { ResearchBanner } from "@/components/home/ResearchBanner";
-import { StatsBand } from "@/components/home/StatsBand";
 import { Layout } from "@/components/layout/Layout";
 
 export default function Home() {
@@ -15,7 +14,6 @@ export default function Home() {
       <FeatureGrid />
       <GuideSection />
       <ResearchBanner />
-      <StatsBand />
       <LoopSection />
     </Layout>
   );

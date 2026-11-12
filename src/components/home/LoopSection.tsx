@@ -8,6 +8,7 @@ import { useI18n } from "@/hooks/useI18n";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { loopGeometry, loopPoint, loopTop } from "@/lib/loop";
 import { LoopCanvas } from "./LoopCanvas";
+import { StatsRow } from "./StatsRow";
 
 const stageTs = stages.map((stage) => stage.t);
 
@@ -131,6 +132,10 @@ export function LoopSection() {
           style={{ background: p.background, opacity: p.id === preset.id ? 1 : 0 }}
         />
       ))}
+
+      <Container className="relative pt-10 sm:pt-14">
+        <StatsRow accent={preset.accent} />
+      </Container>
 
       <Container className="relative pt-14 sm:pt-20">
         <div className="flex items-start justify-between gap-6">
