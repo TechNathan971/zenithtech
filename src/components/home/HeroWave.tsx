@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import type { WaveLook } from "@/lib/wave";
 
-/** Tuning knobs */
-const SPEED = 1; // 0.5 = calmer, 1.5 = livelier
-const FRAME_MS = 1000 / 40; // frame cap
-const MAX_DPR = 1.25; // the ribbon is soft, so a lower pixel density is fine
+const DEFAULT_FPS = 40;
+const DEFAULT_MAX_DPR = 1.25;
 const FREEZE_AT = 14; // time (seconds) shown as the still frame when motion is reduced
 
 const VERTEX = `
@@ -23,11 +22,13 @@ precision mediump float;
 
 uniform vec2 uRes;
 uniform float uTime;
-uniform vec3 uBlue;
-uniform vec3 uCoral;
-
-const vec2 DIR = vec2(0.7317, -0.6816);
-const vec2 NRM = vec2(0.6816, 0.7317);
+uniform vec3 uColorA;
+uniform vec3 uColorB;
+uniform vec3 uColorC;
+uniform float uAngle;
+uniform vec2 uCenter;
+uniform float uScale;
+uniform float uFade;
 
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -47,20 +48,19 @@ float noise(vec2 p) {
 }
 
 vec3 palette(float g) {
-  vec3 peri = mix(uBlue, vec3(1.0), 0.45);
-  vec3 violet = vec3(0.545, 0.361, 0.965);
-  vec3 pink = vec3(0.957, 0.447, 0.714);
-  vec3 c = mix(peri, uBlue, smoothstep(0.0, 0.25, g));
-  c = mix(c, violet, smoothstep(0.25, 0.5, g));
-  c = mix(c, pink, smoothstep(0.5, 0.75, g));
-  return mix(c, uCoral, smoothstep(0.75, 1.0, g));
+  vec3 light = mix(uColorA, vec3(1.0), 0.45);
+  vec3 middle = mix(uColorB, uColorC, 0.5);
+  vec3 c = mix(light, uColorA, smoothstep(0.0, 0.25, g));
+  c = mix(c, uColorB, smoothstep(0.25, 0.5, g));
+  c = mix(c, middle, smoothstep(0.5, 0.75, g));
+  return mix(c, uColorC, smoothstep(0.75, 1.0, g));
 }
 
 // Returns premultiplied color + alpha for one silk ribbon.
-vec4 ribbon(vec2 q, float t, float seed, float widthScale, float shift) {
+vec4 ribbon(vec2 q, vec2 dir, vec2 nrm, float t, float seed, float widthScale, float shift) {
   float ts = t + seed;
-  float u = dot(q, DIR);
-  float v = dot(q, NRM) - shift;
+  float u = dot(q, dir);
+  float v = dot(q, nrm) - shift;
 
   float center = 0.10 * sin(u * 1.9 - ts * 0.45) + 0.04 * sin(u * 4.7 + ts * 0.6);
   float w = (0.24 + 0.09 * sin(u * 1.7 + ts * 0.30) + 0.04 * sin(u * 3.9 - ts * 0.42)) * widthScale;
@@ -69,12 +69,10 @@ vec4 ribbon(vec2 q, float t, float seed, float widthScale, float shift) {
   float edge = 1.0 - smoothstep(0.74, 1.0, abs(d));
   if (edge <= 0.0) return vec4(0.0);
 
-  // fine strands that slide slowly across the ribbon
   float warp = sin(u * 2.4 + ts * 0.2) * 3.0 + noise(vec2(u * 1.6, d * 5.0 + ts * 0.1)) * 2.5;
   float hair = 0.5 + 0.5 * sin(d * 34.0 + warp + ts * 0.35);
   hair = 0.6 * hair + 0.4 * (0.5 + 0.5 * sin(d * 87.0 - warp * 1.7 + u * 4.0));
 
-  // broad folds, like silk catching the light
   float fold = 0.5 + 0.5 * sin(d * 2.2 + u * 1.3 + ts * 0.3);
 
   float g = smoothstep(-0.95, 0.95, u + d * 0.22 + 0.15 * sin(ts * 0.2));
@@ -90,23 +88,29 @@ vec4 ribbon(vec2 q, float t, float seed, float widthScale, float shift) {
 void main() {
   float aspect = uRes.x / uRes.y;
   vec2 p = gl_FragCoord.xy / uRes.y;
-  vec2 q = p - vec2(0.72 * aspect, 0.55);
+  vec2 q = p - vec2(uCenter.x * aspect, uCenter.y);
+  vec2 dir = vec2(cos(uAngle), sin(uAngle));
+  vec2 nrm = vec2(-dir.y, dir.x);
 
-  vec4 back = ribbon(q, uTime, 2.3, 1.3, 0.16) * 0.55;
-  vec4 front = ribbon(q, uTime, 0.0, 1.0, 0.0);
+  vec4 back = ribbon(q, dir, nrm, uTime, 2.3, 1.3 * uScale, 0.16) * 0.55;
+  vec4 front = ribbon(q, dir, nrm, uTime, 0.0, uScale, 0.0);
   vec4 c = front + back * (1.0 - front.a);
 
-  // keep the left side calmer so the headline stays readable
+  // on the home page, keep the left side calmer so the headline stays readable
   float nx = gl_FragCoord.x / uRes.x;
-  c *= mix(0.35, 1.0, smoothstep(0.28, 0.62, nx));
+  float calm = mix(0.35, 1.0, smoothstep(0.28, 0.62, nx));
+  c *= mix(1.0, calm, uFade);
 
   gl_FragColor = c;
 }
 `;
 
-function readColor(name: string, fallback: string): [number, number, number] {
+function readColor(name: string, fallback: string) {
   const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  const hex = /^#[0-9a-f]{6}$/i.test(raw) ? raw : fallback;
+  return /^#[0-9a-f]{6}$/i.test(raw) ? raw : fallback;
+}
+
+function toRgb(hex: string): [number, number, number] {
   const n = parseInt(hex.slice(1), 16);
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 }
@@ -124,7 +128,17 @@ function compile(gl: WebGLRenderingContext, type: number, source: string) {
   return shader;
 }
 
-export function HeroWave({ className }: { className?: string }) {
+type HeroWaveProps = {
+  className?: string;
+  look?: WaveLook;
+  /** Pixels drawn per screen pixel. A low number such as 0.3 gives a soft, blurry ribbon. */
+  resolution?: number;
+  fps?: number;
+  /** 1 keeps the left side calmer (home page hero), 0 shows the ribbon evenly. */
+  fade?: number;
+};
+
+export function HeroWave({ className, look, resolution, fps, fade = 1 }: HeroWaveProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduced = usePrefersReducedMotion();
 
@@ -138,7 +152,7 @@ export function HeroWave({ className }: { className?: string }) {
       premultipliedAlpha: true,
       powerPreference: "low-power",
     });
-    if (!gl) return; // no WebGL: the CSS glow behind the hero is the fallback
+    if (!gl) return; // no WebGL: the page simply shows no ribbon
 
     const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
     const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
@@ -162,18 +176,27 @@ export function HeroWave({ className }: { className?: string }) {
     gl.enableVertexAttribArray(aPos);
     gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
+    const colors = look?.colors ?? [
+      readColor("--color-brand-500", "#3d5cff"),
+      "#8b5cf6",
+      readColor("--color-coral-400", "#ff8a6b"),
+    ];
+    const center = look?.center ?? [0.72, 0.55];
+    const speed = look?.speed ?? 1;
+    const seed = (look?.seed ?? 0) * 10;
+
     const uRes = gl.getUniformLocation(program, "uRes");
     const uTime = gl.getUniformLocation(program, "uTime");
-    gl.uniform3f(
-      gl.getUniformLocation(program, "uBlue"),
-      ...readColor("--color-brand-500", "#3d5cff"),
-    );
-    gl.uniform3f(
-      gl.getUniformLocation(program, "uCoral"),
-      ...readColor("--color-coral-400", "#ff8a6b"),
-    );
+    gl.uniform3f(gl.getUniformLocation(program, "uColorA"), ...toRgb(colors[0]));
+    gl.uniform3f(gl.getUniformLocation(program, "uColorB"), ...toRgb(colors[1]));
+    gl.uniform3f(gl.getUniformLocation(program, "uColorC"), ...toRgb(colors[2]));
+    gl.uniform1f(gl.getUniformLocation(program, "uAngle"), look?.angle ?? -0.75);
+    gl.uniform2f(gl.getUniformLocation(program, "uCenter"), center[0], center[1]);
+    gl.uniform1f(gl.getUniformLocation(program, "uScale"), look?.scale ?? 1);
+    gl.uniform1f(gl.getUniformLocation(program, "uFade"), fade);
     gl.clearColor(0, 0, 0, 0);
 
+    const frameMs = 1000 / (fps ?? DEFAULT_FPS);
     const origin = performance.now();
     let frame = 0;
     let lastDraw = 0;
@@ -188,9 +211,9 @@ export function HeroWave({ className }: { className?: string }) {
 
     const loop = (now: number) => {
       frame = requestAnimationFrame(loop);
-      if (now - lastDraw < FRAME_MS) return;
+      if (now - lastDraw < frameMs) return;
       lastDraw = now;
-      render(((now - origin) / 1000) * SPEED);
+      render(((now - origin) / 1000) * speed + seed);
     };
     const start = () => {
       if (!frame) frame = requestAnimationFrame(loop);
@@ -201,11 +224,11 @@ export function HeroWave({ className }: { className?: string }) {
     };
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-      canvas.width = Math.max(1, Math.round(canvas.clientWidth * dpr));
-      canvas.height = Math.max(1, Math.round(canvas.clientHeight * dpr));
+      const scale = resolution ?? Math.min(window.devicePixelRatio || 1, DEFAULT_MAX_DPR);
+      canvas.width = Math.max(1, Math.round(canvas.clientWidth * scale));
+      canvas.height = Math.max(1, Math.round(canvas.clientHeight * scale));
       // resizing clears the canvas, so draw right away to avoid a blank flash
-      render(reduced ? FREEZE_AT : ((performance.now() - origin) / 1000) * SPEED);
+      render(reduced ? FREEZE_AT + seed : ((performance.now() - origin) / 1000) * speed + seed);
     };
 
     const resizeObserver = new ResizeObserver(resize);
@@ -230,7 +253,7 @@ export function HeroWave({ className }: { className?: string }) {
       gl.deleteBuffer(buffer);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, [reduced]);
+  }, [reduced, look, resolution, fps, fade]);
 
   return <canvas ref={canvasRef} aria-hidden className={className} />;
 }
