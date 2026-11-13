@@ -2,6 +2,7 @@ import { CaseStudies } from "@/components/home/CaseStudies";
 import { FeatureGrid } from "@/components/home/FeatureGrid";
 import { GuideSection } from "@/components/home/GuideSection";
 import { Hero } from "@/components/home/Hero";
+import { LabProjects } from "@/components/home/LabProjects";
 import { LogoStrip } from "@/components/home/LogoStrip";
 import { LoopSection } from "@/components/home/LoopSection";
 import { PlatformSection } from "@/components/home/PlatformSection";
@@ -22,6 +23,7 @@ export default function Home() {
       <CaseStudies />
       <WorkWithMe />
       <ProjectsCarousel />
+      <LabProjects limit={6} />
       <PlatformSection />
       <Testimonials />
       <LoopSection />

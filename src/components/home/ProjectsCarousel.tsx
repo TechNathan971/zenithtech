@@ -2,10 +2,12 @@ import clsx from "clsx";
 import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { FocusEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { projects } from "@/data/portfolio";
-import { projectArt } from "@/data/showcase";
+import { projects, type Project } from "@/data/portfolio";
+import { projectArt, projectMarks } from "@/data/showcase";
+import { useCycle } from "@/hooks/useCycle";
 import { useI18n } from "@/hooks/useI18n";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import type { Text } from "@/lib/i18n";
@@ -30,10 +32,143 @@ const promos: Promo[] = [
       "Dites-moi ce dont vous avez besoin et nous conviendrons d’un périmètre clair et d’un prix fixe.",
     ],
     link: ["Start now", "Commencer"],
-    href: "/contact",
+    href: "/get-started",
     art: "from-orange-400 to-coral-500",
   },
 ];
+
+/* A project card: while you hover it, the result shown on it keeps changing */
+function ProjectCard({ project }: { project: Project }) {
+  const { t } = useI18n();
+  const reduced = usePrefersReducedMotion();
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const step = useCycle((hovered || focused) && !reduced, project.results.length, 1700, 0);
+  const result = project.results[step] ?? project.results[0];
+
+  return (
+    <Link
+      href={`/work/${project.slug}`}
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") setHovered(true);
+      }}
+      onPointerLeave={() => setHovered(false)}
+      onFocus={(e: FocusEvent<HTMLAnchorElement>) =>
+        setFocused((e.target as HTMLElement).matches(":focus-visible"))
+      }
+      onBlur={() => setFocused(false)}
+      className="group block"
+    >
+      <div
+        className={clsx(
+          "relative aspect-[4/5] overflow-hidden rounded-card p-5 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-float",
+          projectArt[project.slug] ?? "bg-brand-600",
+        )}
+      >
+        {/* a light that drifts across the card on hover */}
+        <div
+          aria-hidden
+          className="absolute -inset-10 bg-[radial-gradient(40%_35%_at_75%_15%,rgba(255,255,255,0.45),transparent)] transition-transform duration-1000 ease-out group-hover:-translate-x-1/4 group-hover:translate-y-1/3 group-hover:scale-125"
+        />
+        <span
+          aria-hidden
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] text-8xl font-bold text-white/15 transition-all duration-500 group-hover:scale-110 group-hover:text-white/30"
+        >
+          {projectMarks[project.slug] ?? project.name[0]}
+        </span>
+        <p className="relative text-xl font-semibold text-white">{project.name}</p>
+        <div className="absolute inset-x-5 bottom-5">
+          <p
+            key={step}
+            className="animate-fade-up rounded-xl bg-black/25 p-3 text-sm leading-snug text-white"
+          >
+            {t(result)}
+          </p>
+          <ul className="mt-3 flex flex-wrap gap-1.5">
+            {project.tools.slice(0, 3).map((tool) => (
+              <li
+                key={tool}
+                className="rounded-full bg-white/20 px-2.5 py-1 text-xs font-medium text-white transition-colors group-hover:bg-white/30"
+              >
+                {tool}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <p className="mt-4 line-clamp-3 text-[15px] text-ink-700">{t(project.summary)}</p>
+      <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 transition-colors group-hover:text-brand-800">
+        {t(["Read the story", "Lire l’histoire"])}
+        <ChevronRight
+          aria-hidden
+          className="size-4 transition-transform group-hover:translate-x-1"
+        />
+      </span>
+    </Link>
+  );
+}
+
+const corner =
+  "pointer-events-none absolute opacity-0 transition-all duration-700 ease-out group-hover:opacity-100";
+
+/* A promo card: the whole card is one link, with thin lights that grow along its corners */
+function PromoCard({ promo }: { promo: Promo }) {
+  const { t } = useI18n();
+
+  return (
+    <Link
+      href={promo.href}
+      className="group relative block overflow-hidden rounded-card border border-ink-100 bg-ink-50 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-ink-200 hover:bg-white hover:shadow-card sm:p-8"
+    >
+      <span
+        aria-hidden
+        className={clsx(
+          corner,
+          "top-0 left-5 h-px w-0 bg-linear-to-r from-transparent via-brand-500 to-transparent group-hover:w-1/3",
+        )}
+      />
+      <span
+        aria-hidden
+        className={clsx(
+          corner,
+          "top-5 left-0 h-0 w-px bg-linear-to-b from-transparent via-brand-500 to-transparent group-hover:h-1/3",
+        )}
+      />
+      <span
+        aria-hidden
+        className={clsx(
+          corner,
+          "right-5 bottom-0 h-px w-0 bg-linear-to-r from-transparent via-violet-500 to-transparent group-hover:w-1/3",
+        )}
+      />
+      <span
+        aria-hidden
+        className={clsx(
+          corner,
+          "right-0 bottom-5 h-0 w-px bg-linear-to-b from-transparent via-violet-500 to-transparent group-hover:h-1/3",
+        )}
+      />
+      <div
+        aria-hidden
+        className={clsx(
+          "absolute -right-10 -bottom-12 size-44 rotate-12 rounded-3xl bg-linear-to-br opacity-90 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-[18deg]",
+          promo.art,
+        )}
+      />
+      <p className="relative max-w-sm text-[17px] leading-relaxed">
+        <span className="font-semibold text-ink-950">{t(promo.lead)}</span>{" "}
+        <span className="text-ink-600">{t(promo.body)}</span>
+      </p>
+      <span className="relative mt-5 inline-flex items-center gap-1 font-semibold text-brand-600 transition-colors group-hover:text-brand-800">
+        {t(promo.link)}
+        <ChevronRight
+          aria-hidden
+          className="size-4 transition-transform group-hover:translate-x-1"
+        />
+      </span>
+    </Link>
+  );
+}
 
 export function ProjectsCarousel() {
   const { t } = useI18n();
@@ -122,64 +257,14 @@ export function ProjectsCarousel() {
         >
           {projects.map((project) => (
             <li key={project.slug} className="w-72 shrink-0 snap-start sm:w-80">
-              <Link href={`/work/${project.slug}`} className="group block">
-                <div
-                  className={clsx(
-                    "relative aspect-[4/5] overflow-hidden rounded-card p-5 transition-transform duration-300 group-hover:-translate-y-1",
-                    projectArt[project.slug] ?? "bg-brand-600",
-                  )}
-                >
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 bg-[radial-gradient(70%_60%_at_80%_10%,rgba(255,255,255,0.35),transparent)]"
-                  />
-                  <p className="relative text-xl font-semibold text-white">{project.name}</p>
-                  <ul className="absolute inset-x-5 bottom-5 flex flex-wrap gap-1.5">
-                    {project.tools.slice(0, 3).map((tool) => (
-                      <li
-                        key={tool}
-                        className="rounded-full bg-white/20 px-2.5 py-1 text-xs font-medium text-white"
-                      >
-                        {tool}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <p className="mt-4 line-clamp-3 text-[15px] text-ink-700">{t(project.summary)}</p>
-                <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 transition-colors group-hover:text-brand-800">
-                  {t(["Read the story", "Lire l’histoire"])}
-                  <ChevronRight aria-hidden className="size-4" />
-                </span>
-              </Link>
+              <ProjectCard project={project} />
             </li>
           ))}
         </ul>
 
         <div className="mt-12 grid gap-5 md:grid-cols-2">
           {promos.map((promo) => (
-            <div
-              key={promo.href}
-              className="relative overflow-hidden rounded-card border border-ink-100 bg-ink-50 p-6 sm:p-8"
-            >
-              <div
-                aria-hidden
-                className={clsx(
-                  "absolute -right-10 -bottom-12 size-44 rotate-12 rounded-3xl bg-linear-to-br opacity-90",
-                  promo.art,
-                )}
-              />
-              <p className="relative max-w-sm text-[17px] leading-relaxed">
-                <span className="font-semibold text-ink-950">{t(promo.lead)}</span>{" "}
-                <span className="text-ink-600">{t(promo.body)}</span>
-              </p>
-              <Link
-                href={promo.href}
-                className="relative mt-5 inline-flex items-center gap-1 font-semibold text-brand-600 transition-colors hover:text-brand-800"
-              >
-                {t(promo.link)}
-                <ChevronRight aria-hidden className="size-4" />
-              </Link>
-            </div>
+            <PromoCard key={promo.href} promo={promo} />
           ))}
         </div>
       </Container>

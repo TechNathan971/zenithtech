@@ -1,10 +1,41 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { customerHref, heroLogos } from "@/data/customers";
+import { useState } from "react";
+import { customerHref, heroLogos, type CustomerLogo } from "@/data/customers";
 import { useI18n } from "@/hooks/useI18n";
 
 // One real list plus 3 copies. This must match the -25% in the marquee keyframes.
 const CLONES = 3;
+// Set to false to show the logos alone, without the small names.
+const SHOW_NAMES = true;
+
+function ToolLogo({ logo }: { logo: CustomerLogo }) {
+  const [failed, setFailed] = useState(false);
+
+  // No logo file: show the tool's name instead
+  if (failed) {
+    return <span className={clsx("text-base", logo.className)}>{logo.name}</span>;
+  }
+
+  return (
+    <span className="flex items-center gap-2.5">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        ref={(img) => {
+          // catches a picture that already failed before the page became interactive
+          if (img && img.complete && img.naturalWidth === 0) setFailed(true);
+        }}
+        src={`/logos/${logo.slug}.svg`}
+        alt=""
+        width={28}
+        height={28}
+        onError={() => setFailed(true)}
+        className="size-7 object-contain"
+      />
+      {SHOW_NAMES && <span className="text-sm font-medium text-ink-600">{logo.name}</span>}
+    </span>
+  );
+}
 
 function LogoRow({ hidden = false }: { hidden?: boolean }) {
   return (
@@ -16,14 +47,11 @@ function LogoRow({ hidden = false }: { hidden?: boolean }) {
         <li key={logo.slug}>
           <Link
             href={customerHref(logo.slug)}
+            aria-label={logo.title}
             tabIndex={hidden ? -1 : undefined}
-            className={clsx(
-              "block py-2 text-base whitespace-nowrap text-ink-500 transition-[transform,color] duration-200 ease-out select-none",
-              "hover:-translate-y-1 hover:text-ink-950 focus-visible:-translate-y-1 focus-visible:text-ink-950",
-              logo.className,
-            )}
+            className="block py-2 opacity-80 transition-[transform,opacity] duration-200 ease-out select-none hover:-translate-y-1 hover:opacity-100 focus-visible:-translate-y-1 focus-visible:opacity-100"
           >
-            {logo.name}
+            <ToolLogo logo={logo} />
           </Link>
         </li>
       ))}
