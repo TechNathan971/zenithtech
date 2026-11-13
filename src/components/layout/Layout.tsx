@@ -5,6 +5,7 @@ import type { Text } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
+import { PageBackdrop } from "./PageBackdrop";
 
 type LayoutProps = {
   title?: Text;
@@ -34,9 +35,10 @@ export function Layout({ title, description = site.description, children }: Layo
       </a>
       <div className="flex min-h-screen flex-col">
         <Header />
-        {/* The page frame: thin vertical lines with a small gap to the window edge, like the original */}
+        {/* The page frame: thin vertical lines with a small gap to the window edge */}
         <div className="mx-auto flex w-full flex-1 flex-col sm:w-[calc(100%_-_3rem)] sm:max-w-[1320px] sm:border-x sm:border-ink-100">
-          <main id="main" className="flex-1">
+          <main id="main" className="relative isolate flex-1">
+            <PageBackdrop />
             {children}
           </main>
           <Footer />
