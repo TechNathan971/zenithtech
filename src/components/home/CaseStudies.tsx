@@ -59,11 +59,11 @@ export function CaseStudies() {
                     aria-expanded={open}
                     aria-controls={`case-${project.slug}`}
                     onClick={() => setOpenSlug(open ? null : project.slug)}
-                    className="flex w-full items-center gap-4 py-5 text-left"
+                    className="group flex w-full items-center gap-4 py-5 text-left"
                   >
                     <span
                       className={clsx(
-                        "grid size-12 shrink-0 place-items-center rounded-lg text-base font-bold text-white",
+                        "grid size-12 shrink-0 place-items-center rounded-lg text-base font-bold text-white transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6",
                         art,
                       )}
                     >
