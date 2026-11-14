@@ -1,63 +1,61 @@
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import { Button, buttonStyles } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { news, type NewsItem } from "@/data/news";
 import { useI18n } from "@/hooks/useI18n";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { newsArt } from "./NewsArt";
 
-const cardClass = "group block";
+function SlideMedia({ item }: { item: NewsItem }) {
+  const [failed, setFailed] = useState(false);
+  const Art = newsArt[item.art];
 
-function CardLink({ item, children }: { item: NewsItem; children: ReactNode }) {
-  if (item.external) {
-    return (
-      <a href={item.href} target="_blank" rel="noopener noreferrer" className={cardClass}>
-        {children}
-      </a>
-    );
-  }
+  // The art keeps one fixed width, so a narrow slice shows a crop of it, like a photo
   return (
-    <Link href={item.href} className={cardClass}>
-      {children}
-    </Link>
+    <div className="absolute inset-y-0 left-0 w-[58rem] max-w-none">
+      <Art />
+      {item.photo && !failed && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          ref={(img) => {
+            if (img && img.complete && img.naturalWidth === 0) setFailed(true);
+          }}
+          src={item.photo}
+          alt=""
+          onError={() => setFailed(true)}
+          className="absolute inset-0 size-full object-cover"
+        />
+      )}
+    </div>
   );
 }
 
 export function NewsCarousel() {
   const { t } = useI18n();
   const reduced = usePrefersReducedMotion();
-  const scroller = useRef<HTMLUListElement>(null);
-  const [edges, setEdges] = useState({ start: true, end: false });
+  const [active, setActive] = useState(0);
+  const [touched, setTouched] = useState(false);
 
-  const measure = useCallback(() => {
-    const el = scroller.current;
-    if (!el) return;
-    setEdges({
-      start: el.scrollLeft <= 4,
-      end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 4,
-    });
-  }, []);
-
+  // The slides advance on their own until the visitor picks one
   useEffect(() => {
-    const el = scroller.current;
-    if (!el) return;
-    const observer = new ResizeObserver(measure);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [measure]);
+    if (touched || reduced) return;
+    const id = setInterval(() => setActive((a) => (a + 1) % news.length), 6500);
+    return () => clearInterval(id);
+  }, [touched, reduced]);
 
-  const scrollByCard = (direction: 1 | -1) => {
-    const el = scroller.current;
-    if (!el) return;
-    const card = el.querySelector("li");
-    const step = card ? card.getBoundingClientRect().width + 20 : 320;
-    el.scrollBy({ left: direction * step, behavior: reduced ? "auto" : "smooth" });
+  const choose = (index: number) => {
+    setActive(index);
+    setTouched(true);
   };
+  const go = (direction: 1 | -1) => choose((active + direction + news.length) % news.length);
+
+  const item = news[active];
 
   const arrow =
-    "grid size-11 place-items-center rounded-lg border border-ink-100 bg-brand-50 text-brand-600 transition-colors hover:bg-brand-100 disabled:cursor-not-allowed disabled:opacity-40";
+    "grid size-11 place-items-center rounded-lg border border-ink-100 bg-brand-50 text-brand-600 transition-colors hover:bg-brand-100";
 
   return (
     <section className="border-t border-ink-100 py-16 sm:py-24">
@@ -67,15 +65,14 @@ export function NewsCarousel() {
             <span className="text-ink-950">{t(["What’s happening", "Ce qui se passe"])}</span>
             <br />
             <span className="text-ink-400">
-              {t(["The latest from the lab.", "Les dernières nouvelles du labo."])}
+              {t(["See the latest from the lab.", "Les dernières nouvelles du labo."])}
             </span>
           </h2>
           <div className="flex gap-2">
             <button
               type="button"
               aria-label={t(["Previous", "Précédent"])}
-              disabled={edges.start}
-              onClick={() => scrollByCard(-1)}
+              onClick={() => go(-1)}
               className={arrow}
             >
               <ArrowLeft aria-hidden className="size-5" />
@@ -83,8 +80,7 @@ export function NewsCarousel() {
             <button
               type="button"
               aria-label={t(["Next", "Suivant"])}
-              disabled={edges.end}
-              onClick={() => scrollByCard(1)}
+              onClick={() => go(1)}
               className={arrow}
             >
               <ArrowRight aria-hidden className="size-5" />
@@ -92,55 +88,73 @@ export function NewsCarousel() {
           </div>
         </div>
 
-        <ul
-          ref={scroller}
-          onScroll={measure}
-          className="mt-10 flex snap-x snap-mandatory [scrollbar-width:none] gap-5 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden"
-        >
-          {news.map((item) => (
-            <li key={item.id} className="w-72 shrink-0 snap-start sm:w-80">
-              <CardLink item={item}>
-                <div
-                  className={clsx(
-                    "relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-card transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-float",
-                    item.art,
-                  )}
-                >
-                  <div
-                    aria-hidden
-                    className="absolute -inset-10 bg-[radial-gradient(40%_35%_at_75%_15%,rgba(255,255,255,0.4),transparent)] transition-transform duration-1000 ease-out group-hover:-translate-x-1/4 group-hover:translate-y-1/3 group-hover:scale-125"
-                  />
-                  <span
-                    aria-hidden
-                    className="relative text-4xl font-bold tracking-tight text-white/90 transition-transform duration-500 group-hover:scale-110"
-                  >
-                    {item.mark}
-                  </span>
-                </div>
-                <p className="mt-4 text-xs font-semibold tracking-widest text-brand-600 uppercase">
-                  {t(item.category)}
-                </p>
-                <p className="mt-2 text-lg leading-snug font-medium text-ink-950">
-                  {t(item.title)}
-                </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 transition-colors group-hover:text-brand-800">
-                  {t(["Read more", "En savoir plus"])}
-                  {item.external ? (
-                    <ArrowUpRight
-                      aria-hidden
-                      className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+        {/* One big slide and narrow slices. Click a slice to bring it forward. */}
+        <ul className="mt-10 flex h-[24rem] gap-2 sm:h-[30rem] sm:gap-3 lg:h-[36rem]">
+          {news.map((entry, index) => {
+            const isActive = index === active;
+            return (
+              <li
+                key={entry.id}
+                className={clsx(
+                  "relative min-w-2 basis-0 overflow-hidden rounded-card transition-[flex-grow] duration-700 ease-out sm:min-w-9",
+                  isActive ? "grow-[30] sm:grow-[12]" : "grow-[1]",
+                )}
+              >
+                <SlideMedia item={entry} />
+                {isActive ? (
+                  entry.external ? (
+                    <a
+                      href={entry.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={t(entry.title)}
+                      className="absolute inset-0 z-10"
                     />
                   ) : (
-                    <ChevronRight
-                      aria-hidden
-                      className="size-4 transition-transform group-hover:translate-x-1"
+                    <Link
+                      href={entry.href}
+                      aria-label={t(entry.title)}
+                      className="absolute inset-0 z-10"
                     />
-                  )}
-                </span>
-              </CardLink>
-            </li>
-          ))}
+                  )
+                ) : (
+                  <button
+                    type="button"
+                    aria-label={t(entry.title)}
+                    onClick={() => choose(index)}
+                    className="absolute inset-0 z-10 cursor-pointer bg-white/0 transition-colors hover:bg-white/15"
+                  />
+                )}
+              </li>
+            );
+          })}
         </ul>
+
+        <div
+          key={item.id}
+          aria-live="polite"
+          className="mt-8 grid animate-fade-up gap-6 lg:grid-cols-[1fr_auto] lg:items-center"
+        >
+          <p className="max-w-3xl text-lg leading-relaxed">
+            <span className="font-semibold text-ink-950">{t(item.title)}</span>{" "}
+            <span className="text-ink-600">{t(item.text)}</span>
+          </p>
+          {item.external ? (
+            <a
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonStyles({ variant: "secondary", size: "lg" })}
+            >
+              {t(item.cta)}
+              <ArrowUpRight aria-hidden className="size-4" />
+            </a>
+          ) : (
+            <Button href={item.href} variant="secondary" size="lg" arrow>
+              {t(item.cta)}
+            </Button>
+          )}
+        </div>
       </Container>
     </section>
   );

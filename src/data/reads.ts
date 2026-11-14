@@ -6,7 +6,9 @@ export type Read = {
   authors: string;
   blurb: Text;
   why: Text;
-  background: string;
+  panel: string; // colour of the panel behind the cover
+  background: string; // colours of the drawn cover, used until you add a real cover picture
+  cover: string; // path of the real cover picture
   url?: string;
 };
 
@@ -24,7 +26,9 @@ export const reads: Read[] = [
       "The source of the DORA metrics used in my thesis.",
       "La source des métriques DORA utilisées dans mon mémoire.",
     ],
+    panel: "#6b7a99",
     background: "linear-gradient(145deg, #1d2a6b, #3d5cff)",
+    cover: "/images/books/accelerate.jpg",
   },
   {
     title: "The Phoenix Project",
@@ -38,7 +42,9 @@ export const reads: Read[] = [
       "A friendly way to see why pipelines matter beyond the tooling.",
       "Une façon accessible de comprendre pourquoi les pipelines comptent au-delà des outils.",
     ],
+    panel: "#8f7058",
     background: "linear-gradient(145deg, #7a3512, #f97316)",
+    cover: "/images/books/phoenix-project.jpg",
   },
   {
     title: "Site Reliability Engineering",
@@ -52,7 +58,9 @@ export const reads: Read[] = [
       "A good next step once you have pipelines and want to keep them reliable.",
       "Une bonne suite une fois les pipelines en place, pour les garder fiables.",
     ],
+    panel: "#5f8574",
     background: "linear-gradient(145deg, #0f4c3a, #10b981)",
+    cover: "/images/books/sre-book.jpg",
     url: "https://sre.google/sre-book/table-of-contents/",
   },
   {
@@ -68,6 +76,8 @@ export const reads: Read[] = [
       "A practical map for adopting DevOps in a real team.",
       "Une feuille de route concrète pour adopter le DevOps dans une vraie équipe.",
     ],
+    panel: "#7d6a92",
     background: "linear-gradient(145deg, #4a1a6b, #a855f7)",
+    cover: "/images/books/devops-handbook.jpg",
   },
 ];

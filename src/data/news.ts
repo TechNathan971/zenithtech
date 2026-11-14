@@ -2,69 +2,92 @@ import type { Text } from "@/lib/i18n";
 
 export type NewsItem = {
   id: string;
-  category: Text;
-  title: Text;
+  art: "letter" | "thesis" | "dwts" | "build" | "workbench" | "guide";
+  /** Optional real picture, for example "/images/news/thesis.jpg". Without it, the illustration shows. */
+  photo?: string;
+  title: Text; // the dark lead text under the carousel
+  text: Text; // the grey continuation
   href: string;
   external?: boolean;
-  mark: string;
-  art: string;
+  cta: Text;
 };
 
-// Every item is something already true on this site. Add a new one at the top as things happen.
+// The first slide is the year in review, like the annual letter in the original.
 export const news: NewsItem[] = [
   {
-    id: "thesis",
-    category: ["Research", "Recherche"],
+    id: "letter",
+    art: "letter",
     title: [
-      "Thesis: measuring CI/CD with DORA metrics",
-      "Mémoire : mesurer le CI/CD avec les métriques DORA",
+      "2026 brought a degree, a thesis on CI/CD and the build of this site.",
+      "2026 a apporté un diplôme, un mémoire sur le CI/CD et la construction de ce site.",
+    ],
+    text: [
+      "The year in review covers what I shipped, what I measured and what comes next.",
+      "Le bilan de l’année raconte ce que j’ai livré, ce que j’ai mesuré et ce qui vient ensuite.",
+    ],
+    href: "/letter",
+    cta: ["Read the review", "Lire le bilan"],
+  },
+  {
+    id: "thesis",
+    art: "thesis",
+    title: [
+      "Does automation really improve delivery?",
+      "L’automatisation améliore-t-elle vraiment la livraison ?",
+    ],
+    text: [
+      "My thesis measures CI/CD pipelines in humanitarian software with the four DORA metrics.",
+      "Mon mémoire mesure les pipelines CI/CD dans les logiciels humanitaires avec les quatre métriques DORA.",
     ],
     href: "/work/research-thesis",
-    mark: "DORA",
-    art: "bg-linear-to-br from-violet-600 via-fuchsia-500 to-pink-400",
+    cta: ["Read the thesis", "Lire le mémoire"],
   },
   {
     id: "dwts",
-    category: ["Case study", "Étude de cas"],
-    title: ["DWTS: from 4.2 hours to under 6 minutes", "DWTS : de 4,2 heures à moins de 6 minutes"],
+    art: "dwts",
+    title: [
+      "DWTS went from 4.2 hours to under 6 minutes.",
+      "DWTS est passé de 4,2 heures à moins de 6 minutes.",
+    ],
+    text: [
+      "Automating the pipeline cut lead time, raised deployment frequency by 750% and lowered failures from 34% to 4%.",
+      "L’automatisation du pipeline a réduit le délai, augmenté la fréquence de déploiement de 750 % et ramené les échecs de 34 % à 4 %.",
+    ],
     href: "/work/dwts",
-    mark: "4.2h → 6m",
-    art: "bg-linear-to-br from-brand-700 via-brand-500 to-cyan-400",
+    cta: ["Read the story", "Lire l’histoire"],
   },
   {
     id: "build",
-    category: ["Build log", "Journal de bord"],
-    title: ["Building ZenithTech in the open", "Construire ZenithTech en toute transparence"],
+    art: "build",
+    title: ["ZenithTech is built in the open.", "ZenithTech se construit en toute transparence."],
+    text: [
+      "Follow the code, the commits and the DevOps cycle on GitHub.",
+      "Suivez le code, les commits et le cycle DevOps sur GitHub.",
+    ],
     href: "https://github.com/TechNathan971/zenithtech",
     external: true,
-    mark: "</>",
-    art: "bg-linear-to-br from-ink-900 via-brand-800 to-violet-600",
+    cta: ["View the repository", "Voir le dépôt"],
   },
   {
     id: "workbench",
-    category: ["Workbench", "Établi"],
-    title: ["Twelve projects I’m planning next", "Douze projets que je prévois ensuite"],
+    art: "workbench",
+    title: ["Twelve projects are lined up next.", "Douze projets sont prévus ensuite."],
+    text: [
+      "From reusable pipelines to a DORA dashboard, each one gets its links here when it is published.",
+      "Des pipelines réutilisables à un tableau de bord DORA, chacun reçoit ses liens ici dès sa publication.",
+    ],
     href: "/work",
-    mark: "12",
-    art: "bg-linear-to-br from-orange-400 via-coral-500 to-pink-500",
+    cta: ["See the workbench", "Voir l’établi"],
   },
   {
     id: "guide",
-    category: ["New", "Nouveau"],
-    title: [
-      "Guide me: find the right starting point",
-      "Me guider : trouver le bon point de départ",
+    art: "guide",
+    title: ["Not sure where to start?", "Pas sûr par où commencer ?"],
+    text: [
+      "Describe your project and Guide me points you to the work and services that fit.",
+      "Décrivez votre projet et « Me guider » vous oriente vers les travaux et services qui conviennent.",
     ],
     href: "/guide-me",
-    mark: "?",
-    art: "bg-linear-to-br from-teal-500 via-emerald-500 to-lime-400",
-  },
-  {
-    id: "degree",
-    category: ["Milestone", "Étape"],
-    title: ["BSc in Software Engineering, 2026", "Bachelor of Science en génie logiciel, 2026"],
-    href: "/letter",
-    mark: "BSc",
-    art: "bg-linear-to-br from-indigo-600 via-brand-500 to-sky-400",
+    cta: ["Try Guide me", "Essayer Me guider"],
   },
 ];

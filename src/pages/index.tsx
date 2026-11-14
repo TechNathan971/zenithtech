@@ -1,4 +1,3 @@
-import { AnnualLetter } from "@/components/home/AnnualLetter";
 import { CaseStudies } from "@/components/home/CaseStudies";
 import { ClosingCta } from "@/components/home/ClosingCta";
 import { FeatureGrid } from "@/components/home/FeatureGrid";
@@ -32,7 +31,6 @@ export default function Home() {
       <Testimonials />
       <LoopSection />
       <NewsCarousel />
-      <AnnualLetter />
       <ReadOfTheWeek />
       <ClosingCta />
     </Layout>
