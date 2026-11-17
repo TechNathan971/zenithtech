@@ -4,8 +4,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { projects } from "@/data/portfolio";
-import { caseHeadlines, projectArt, projectMarks } from "@/data/showcase";
+import { caseHeadlines, projectArt, projectHighlights, projectMarks } from "@/data/showcase";
 import { useI18n } from "@/hooks/useI18n";
+import { projectScenes } from "./ProjectArt";
 
 export function CaseStudies() {
   const { t } = useI18n();
@@ -49,6 +50,8 @@ export function CaseStudies() {
             const open = project.slug === openSlug;
             const art = projectArt[project.slug] ?? "bg-brand-600";
             const headline = caseHeadlines[project.slug] ?? project.summary;
+            const Scene = projectScenes[project.slug];
+            const highlight = projectHighlights[project.slug];
 
             return (
               <li key={project.slug}>
@@ -94,29 +97,39 @@ export function CaseStudies() {
                   <div className="overflow-hidden">
                     <div className="pb-8">
                       <div
-                        className={clsx(
-                          "relative min-h-52 overflow-hidden rounded-card p-6 sm:min-h-64 sm:p-10",
-                          art,
-                        )}
+                        className={clsx("group/panel relative overflow-hidden rounded-card", art)}
                       >
                         <div
                           aria-hidden
-                          className="absolute inset-0 bg-[radial-gradient(60%_80%_at_80%_20%,rgba(255,255,255,0.35),transparent)]"
+                          className="absolute inset-0 bg-[radial-gradient(60%_80%_at_80%_20%,rgba(255,255,255,0.35),transparent)] transition-transform duration-1000 group-hover/panel:scale-110"
                         />
-                        <div className="relative flex h-full min-h-40 flex-col justify-between gap-6 text-white sm:min-h-44">
-                          <div className="flex items-start justify-between gap-4">
-                            <p className="text-2xl font-semibold sm:text-4xl">{project.name}</p>
-                            <Button
-                              href={`/work/${project.slug}`}
-                              variant="secondary"
-                              className="shrink-0"
-                            >
-                              {t(["Read the story", "Lire l’histoire"])}
-                            </Button>
+                        <div className="relative grid gap-8 p-6 sm:p-10 md:grid-cols-[1fr_1.15fr] md:items-center">
+                          <div className="text-white">
+                            <p className="text-3xl font-semibold sm:text-4xl">{project.name}</p>
+                            <p className="mt-2 text-white/85">{t(project.role)}</p>
+                            {highlight && (
+                              <div className="mt-8">
+                                <p className="text-4xl font-semibold tabular-nums sm:text-5xl">
+                                  {t(highlight.value)}
+                                </p>
+                                <p className="mt-2 text-sm text-white/85">{t(highlight.label)}</p>
+                              </div>
+                            )}
+                            <div className="mt-8">
+                              <Button href={`/work/${project.slug}`} variant="secondary">
+                                {t(["Read the story", "Lire l’histoire"])}
+                              </Button>
+                            </div>
                           </div>
-                          <p className="max-w-md text-sm text-white/90 sm:text-base">
-                            {t(project.role)}
-                          </p>
+                          <div className="flex flex-col items-center md:items-end">
+                            {Scene && <Scene />}
+                            <p className="mt-6 text-[11px] text-white/70">
+                              {t([
+                                "Illustration with sample data.",
+                                "Illustration avec des données d’exemple.",
+                              ])}
+                            </p>
+                          </div>
                         </div>
                       </div>
 
