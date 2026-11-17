@@ -34,3 +34,23 @@ export const caseHeadlines: Record<string, Text> = {
     "MeloKeys accélère de 40 % la mise en place des dispositions de clavier et d’audio.",
   ],
 };
+
+/** The big number shown on each project's panel. */
+export const projectHighlights: Record<string, { value: Text; label: Text }> = {
+  dwts: {
+    value: ["4.2 h → < 6 min", "4,2 h → < 6 min"],
+    label: ["deployment lead time", "délai de déploiement"],
+  },
+  "ci-cd-lab-pipeline": {
+    value: "100%",
+    label: ["automated builds", "builds automatisés"],
+  },
+  senvato: {
+    value: "−50%",
+    label: ["contact response time", "délai de réponse aux contacts"],
+  },
+  melokeys: {
+    value: "+40%",
+    label: ["faster layout setup", "mise en place plus rapide"],
+  },
+};

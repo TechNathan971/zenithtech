@@ -1,10 +1,11 @@
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { FocusEvent } from "react";
+import type { FocusEvent, PointerEvent, ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { labHref, labProjects, statusLabels, type LabProject } from "@/data/lab";
 import { projects, type Project } from "@/data/portfolio";
 import { projectArt, projectMarks } from "@/data/showcase";
 import { useCycle } from "@/hooks/useCycle";
@@ -37,7 +38,24 @@ const promos: Promo[] = [
   },
 ];
 
-/* A project card: while you hover it, the result shown on it keeps changing */
+// One look per workbench project, so the twelve cards don't all share a colour.
+const labArt = [
+  "bg-linear-to-br from-brand-700 via-brand-500 to-cyan-400",
+  "bg-linear-to-br from-violet-700 via-violet-500 to-pink-400",
+  "bg-linear-to-br from-teal-600 via-emerald-500 to-lime-400",
+  "bg-linear-to-br from-orange-500 via-coral-500 to-pink-500",
+  "bg-linear-to-br from-indigo-700 via-brand-500 to-sky-400",
+  "bg-linear-to-br from-fuchsia-600 via-violet-500 to-brand-400",
+];
+
+const kindLabel: Record<string, Text> = {
+  site: ["Visit the site", "Visiter le site"],
+  repo: ["View the repository", "Voir le dépôt"],
+  readme: ["Read the README", "Lire le README"],
+  details: ["See details", "Voir les détails"],
+};
+
+/* A shipped project: while you hover it, the result shown on it keeps changing */
 function ProjectCard({ project }: { project: Project }) {
   const { t } = useI18n();
   const reduced = usePrefersReducedMotion();
@@ -65,7 +83,6 @@ function ProjectCard({ project }: { project: Project }) {
           projectArt[project.slug] ?? "bg-brand-600",
         )}
       >
-        {/* a light that drifts across the card on hover */}
         <div
           aria-hidden
           className="absolute -inset-10 bg-[radial-gradient(40%_35%_at_75%_15%,rgba(255,255,255,0.45),transparent)] transition-transform duration-1000 ease-out group-hover:-translate-x-1/4 group-hover:translate-y-1/3 group-hover:scale-125"
@@ -104,6 +121,93 @@ function ProjectCard({ project }: { project: Project }) {
           className="size-4 transition-transform group-hover:translate-x-1"
         />
       </span>
+    </Link>
+  );
+}
+
+/* A workbench project: hover it and the text switches between why it matters and the tools */
+function LabCard({ project, index }: { project: LabProject; index: number }) {
+  const { t } = useI18n();
+  const reduced = usePrefersReducedMotion();
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const step = useCycle((hovered || focused) && !reduced, 2, 2200, 0);
+  const target = labHref(project);
+  const Icon = project.icon;
+
+  const line =
+    step === 0
+      ? t(project.why)
+      : `${t(["Built with", "Construit avec"])} ${project.tools.join(", ")}`;
+
+  const shared = {
+    onPointerEnter: (e: PointerEvent<HTMLElement>) => {
+      if (e.pointerType === "mouse") setHovered(true);
+    },
+    onPointerLeave: () => setHovered(false),
+    onFocus: (e: FocusEvent<HTMLElement>) =>
+      setFocused((e.target as HTMLElement).matches(":focus-visible")),
+    onBlur: () => setFocused(false),
+    className: "group block",
+  };
+
+  const body: ReactNode = (
+    <>
+      <div
+        className={clsx(
+          "relative aspect-[4/5] overflow-hidden rounded-card p-5 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-float",
+          labArt[index % labArt.length],
+        )}
+      >
+        <div
+          aria-hidden
+          className="absolute -inset-10 bg-[radial-gradient(40%_35%_at_75%_15%,rgba(255,255,255,0.4),transparent)] transition-transform duration-1000 ease-out group-hover:-translate-x-1/4 group-hover:translate-y-1/3 group-hover:scale-125"
+        />
+        <Icon
+          aria-hidden
+          className="absolute top-1/2 left-1/2 size-24 -translate-x-1/2 -translate-y-[65%] text-white/25 transition-all duration-500 group-hover:scale-110 group-hover:text-white/40"
+        />
+        <div className="relative flex items-start justify-between gap-2">
+          <p className="text-xl leading-tight font-semibold text-white">{t(project.title)}</p>
+          <span className="shrink-0 rounded-full bg-white/25 px-2.5 py-1 text-xs font-medium text-white">
+            {t(statusLabels[project.status])}
+          </span>
+        </div>
+        <p
+          key={step}
+          className="absolute inset-x-5 bottom-5 line-clamp-4 animate-fade-up rounded-xl bg-black/25 p-3 text-sm leading-snug text-white"
+        >
+          {line}
+        </p>
+      </div>
+      <p className="mt-4 line-clamp-3 text-[15px] text-ink-700">{t(project.summary)}</p>
+      <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 transition-colors group-hover:text-brand-800">
+        {t(kindLabel[target.kind])}
+        {target.external ? (
+          <ArrowUpRight
+            aria-hidden
+            className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          />
+        ) : (
+          <ChevronRight
+            aria-hidden
+            className="size-4 transition-transform group-hover:translate-x-1"
+          />
+        )}
+      </span>
+    </>
+  );
+
+  if (target.external) {
+    return (
+      <a href={target.href} target="_blank" rel="noopener noreferrer" {...shared}>
+        {body}
+      </a>
+    );
+  }
+  return (
+    <Link href={target.href} {...shared}>
+      {body}
     </Link>
   );
 }
@@ -211,8 +315,8 @@ export function ProjectsCarousel() {
           <div>
             <h2 className="max-w-xl text-2xl leading-tight font-medium tracking-tight text-ink-950 sm:text-3xl lg:text-4xl">
               {t([
-                "Projects that went from idea to production.",
-                "Des projets passés de l’idée à la production.",
+                "Shipped projects, and the next twelve.",
+                "Les projets livrés, et les douze suivants.",
               ])}
             </h2>
             <div className="mt-6">
@@ -223,8 +327,8 @@ export function ProjectsCarousel() {
           </div>
           <p className="max-w-lg text-lg text-ink-600 lg:justify-self-end">
             {t([
-              "Four projects across humanitarian tech, music, DevOps and local services, each with the tools and results behind it.",
-              "Quatre projets entre technologie humanitaire, musique, DevOps et services locaux, chacun avec ses outils et ses résultats.",
+              "Four projects with results behind them, then twelve more on the workbench. Each card opens its story, its site or its repository.",
+              "Quatre projets avec leurs résultats, puis douze autres sur l’établi. Chaque carte ouvre son histoire, son site ou son dépôt.",
             ])}
           </p>
         </div>
@@ -258,6 +362,11 @@ export function ProjectsCarousel() {
           {projects.map((project) => (
             <li key={project.slug} className="w-72 shrink-0 snap-start sm:w-80">
               <ProjectCard project={project} />
+            </li>
+          ))}
+          {labProjects.map((project, index) => (
+            <li key={project.slug} className="w-72 shrink-0 snap-start sm:w-80">
+              <LabCard project={project} index={index} />
             </li>
           ))}
         </ul>

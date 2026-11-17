@@ -3,7 +3,6 @@ import { ClosingCta } from "@/components/home/ClosingCta";
 import { FeatureGrid } from "@/components/home/FeatureGrid";
 import { GuideSection } from "@/components/home/GuideSection";
 import { Hero } from "@/components/home/Hero";
-import { LabProjects } from "@/components/home/LabProjects";
 import { LogoStrip } from "@/components/home/LogoStrip";
 import { LoopSection } from "@/components/home/LoopSection";
 import { NewsCarousel } from "@/components/home/NewsCarousel";
@@ -26,7 +25,6 @@ export default function Home() {
       <CaseStudies />
       <WorkWithMe />
       <ProjectsCarousel />
-      <LabProjects limit={6} />
       <PlatformSection />
       <Testimonials />
       <LoopSection />
