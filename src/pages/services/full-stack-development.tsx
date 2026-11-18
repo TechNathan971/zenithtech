@@ -1,4 +1,4 @@
-import { ServicePage } from "@/components/pages/ServicePage";
+import { ServicePage } from "@/pages/ServicePage";
 
 export default function FullStackDevelopmentPage() {
   return <ServicePage slug="full-stack-development" />;
