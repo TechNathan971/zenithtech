@@ -1,4 +1,4 @@
-import { ServicePage } from "@/components/pages/ServicePage";
+import { ServicePage } from "@/pages/ServicePage";
 
 export default function CiCdAutomationPage() {
   return <ServicePage slug="ci-cd-automation" />;
