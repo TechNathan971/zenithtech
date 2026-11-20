@@ -1,11 +1,13 @@
 import Head from "next/head";
 import type { ReactNode } from "react";
 import { useI18n } from "@/hooks/useI18n";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import type { Text } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { PageBackdrop } from "./PageBackdrop";
+import { ScrollProgress } from "./ScrollProgress";
 
 type LayoutProps = {
   title?: Text;
@@ -15,6 +17,8 @@ type LayoutProps = {
 
 export function Layout({ title, description = site.description, children }: LayoutProps) {
   const { t } = useI18n();
+  useScrollReveal();
+
   const fullTitle = title ? `${t(title)} | ${site.name}` : `${site.name} | ${t(site.tagline)}`;
   const text = t(description);
 
@@ -27,6 +31,7 @@ export function Layout({ title, description = site.description, children }: Layo
         <meta property="og:description" content={text} />
         <meta property="og:type" content="website" />
       </Head>
+      <ScrollProgress />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:shadow-card"

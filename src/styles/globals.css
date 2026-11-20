@@ -149,3 +149,38 @@
     }
   }
 }
+
+/* Scroll reveal: things below the fold fade up as they come into view */
+@keyframes sr-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.sr {
+  opacity: 0;
+}
+
+.sr-in {
+  animation: sr-up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--sr-delay, 0ms) both;
+}
+
+@media (scripting: none) {
+  .sr {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sr {
+    opacity: 1;
+  }
+  .sr-in {
+    animation: none;
+  }
+}
