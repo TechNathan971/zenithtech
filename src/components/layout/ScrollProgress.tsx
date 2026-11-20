@@ -1,56 +1,38 @@
-import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
-import { HeroWave } from "@/components/home/HeroWave";
-import { backdropFor } from "@/data/backdrops";
-import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
-export function PageBackdrop() {
-  const { asPath } = useRouter();
-  const reduced = usePrefersReducedMotion();
-  const layer = useRef<HTMLDivElement>(null);
-  const path = asPath.split(/[?#]/)[0] || "/";
+export function ScrollProgress() {
+  const bar = useRef<HTMLDivElement>(null);
 
-  // The background drifts down a little more slowly than the page, which gives depth
   useEffect(() => {
-    if (reduced) return;
     let frame = 0;
 
     const update = () => {
       frame = 0;
-      if (layer.current) {
-        const shift = Math.min(window.scrollY, 700) * 0.25;
-        layer.current.style.transform = `translate3d(0, ${shift}px, 0)`;
-      }
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+      if (bar.current) bar.current.style.transform = `scaleX(${progress})`;
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
 
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(frame);
     };
-  }, [reduced]);
-
-  // The home page has its own, sharper ribbon in the hero
-  if (path === "/") return null;
+  }, []);
 
   return (
-    <div
-      ref={layer}
-      aria-hidden
-      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[34rem] overflow-hidden will-change-transform"
-    >
-      {/* drawn at low resolution, so the browser's smooth scaling makes it soft */}
-      <HeroWave
-        look={backdropFor(path)}
-        resolution={0.3}
-        fps={24}
-        fade={0}
-        className="absolute inset-0 size-full opacity-60"
+    <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-[70] h-0.5">
+      <div
+        ref={bar}
+        className="h-full origin-left bg-linear-to-r from-brand-500 via-violet-500 to-coral-400"
+        style={{ transform: "scaleX(0)" }}
       />
-      <div className="absolute inset-0 bg-linear-to-b from-white/0 via-white/10 to-white" />
     </div>
   );
 }
